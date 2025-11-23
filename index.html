@@ -4,7 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SchoolNext - Sistema de Gestión Educativa</title>
+    
+    <!-- Cargar config.js -->
+    <script src="config.js"></script>
+    
     <style>
+        /* Variables CSS para colores dinámicos */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --tertiary-color: #764ba2;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -19,7 +30,7 @@
         
         /* Header */
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 1rem 0;
             position: fixed;
@@ -62,7 +73,7 @@
         /* Hero Section */
         .hero {
             margin-top: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 6rem 2rem;
             text-align: center;
@@ -82,7 +93,7 @@
         .cta-button {
             display: inline-block;
             background: white;
-            color: #667eea;
+            color: var(--primary-color);
             padding: 1rem 2.5rem;
             border-radius: 50px;
             text-decoration: none;
@@ -107,7 +118,7 @@
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 3rem;
-            color: #667eea;
+            color: var(--primary-color);
         }
         
         .features-grid {
@@ -130,7 +141,7 @@
         }
         
         .feature-card h4 {
-            color: #667eea;
+            color: var(--primary-color);
             margin-bottom: 1rem;
             font-size: 1.5rem;
         }
@@ -160,7 +171,7 @@
     <header>
         <nav>
             <div class="logo">
-                <h1>SchoolNext</h1>
+                <h1 id="site-name">SchoolNext</h1>
             </div>
             <ul class="nav-menu">
                 <li><a href="#inicio">Inicio</a></li>
@@ -172,8 +183,8 @@
     </header>
 
     <section class="hero" id="inicio">
-        <h2>Sistema de Gestión Educativa en la Nube</h2>
-        <p>La solución completa para la administración moderna de instituciones educativas</p>
+        <h2 id="hero-title">Sistema de Gestión Educativa en la Nube</h2>
+        <p id="hero-subtitle">La solución completa para la administración moderna de instituciones educativas</p>
         <a href="demo.html" class="cta-button">Solicitar Demo</a>
     </section>
 
@@ -208,8 +219,29 @@
     </section>
 
     <footer>
-        <p>&copy; 2025 SchoolNext. Todos los derechos reservados.</p>
+        <p>&copy; 2025 <span id="footer-name">SchoolNext</span>. Todos los derechos reservados.</p>
         <p>Sistema de Gestión Educativa SaaS</p>
     </footer>
+
+    <script>
+        // Cargar configuración y aplicar al contenido
+        document.addEventListener('DOMContentLoaded', async () => {
+            const config = await loadSiteConfig();
+            
+            // Actualizar textos dinámicos
+            if (config.site_name) {
+                document.getElementById('site-name').textContent = config.site_name;
+                document.getElementById('footer-name').textContent = config.site_name;
+            }
+            
+            if (config.hero_title) {
+                document.getElementById('hero-title').textContent = config.hero_title;
+            }
+            
+            if (config.hero_subtitle) {
+                document.getElementById('hero-subtitle').textContent = config.hero_subtitle;
+            }
+        });
+    </script>
 </body>
 </html>
