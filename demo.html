@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - SchoolNext</title>
+    
+    <!-- Cargar config.js -->
+    <script src="config.js"></script>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        /* Variables CSS para colores dinámicos */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --tertiary-color: #764ba2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Recommendation Box */
+        .recommendation-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 2rem;
+            margin: 3rem auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .recommendation-box h3 {
+            color: #856404;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .recommendation-box ol {
+            margin-left: 1.5rem;
+            color: #856404;
+        }
+        
+        .recommendation-box li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .recommendation-box p {
+            color: #856404;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        
+        /* Instructions */
+        .instructions {
+            text-align: center;
+            margin: 3rem auto;
+            padding: 2rem;
+        }
+        
+        .instructions h3 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            text-align: center;
+        }
+        
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+        
+        .step h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* User Cards */
+        .users-section {
+            margin: 3rem auto;
+        }
+        
+        .users-section h3 {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .user-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        
+        .user-card.recommended {
+            border-top-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .user-card.recommended .card-badge {
+            background: #28a745;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-icon {
+            font-size: 3rem;
+        }
+        
+        .user-title h4 {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .user-subtitle {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .credentials {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .credential-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .credential-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .credential-label {
+            font-weight: 600;
+            min-width: 100px;
+        }
+        
+        .credential-value {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            flex: 1;
+        }
+        
+        .permissions {
+            margin-bottom: 1.5rem;
+        }
+        
+        .permissions h5 {
+            color: #495057;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .permission-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .permission-list li {
+            padding: 0.25rem 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .permission-list li i {
+            color: #28a745;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-login {
+            display: block;
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        .btn-login:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 2rem;
+            margin: 3rem auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .info-box h3 {
+            color: #0c5460;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .info-box p {
+            color: #0c5460;
+            margin: 0;
+        }
+        
+        /* Modules Section */
+        .modules-section {
+            margin: 3rem auto;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .modules-section h3 {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .module-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .module-icon {
+            font-size: 2rem;
+        }
+        
+        .module-info h4 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .module-info p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .steps {
+                flex-direction: column;
+            }
+            
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1 id="site-name">SchoolNext</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="#caracteristicas">Características</a></li>
+                <li><a href="demo.html">Demo</a></li>
+                <li><a href="https://schoolnext.co/login.html">Ingresar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Explora SchoolNext sin límites</h2>
+        <p>Prueba todas las funcionalidades con usuarios de demostración reales</p>
+        <p>No se requiere registro</p>
+    </section>
+
+    <div class="container">
+        <!-- Caja de Recomendación -->
+        <div class="recommendation-box">
+            <h3><i class="bi bi-book"></i> Recomendación: Comienza explorando los manuales</h3>
+            <p>Para aprovechar al máximo tu experiencia de demostración, te sugerimos:</p>
+            <ol>
+                <li><strong>Ingresa primero como Super Administrador</strong> (credenciales abajo)</li>
+                <li><strong>En cada página del sistema, haz clic en el ícono 📖</strong> que aparece en la barra superior</li>
+                <li><strong>Lee los manuales</strong> para comprender qué hace cada funcionalidad y cómo usarla</li>
+                <li><strong>Después, experimenta con diferentes roles</strong> para ver cómo funcionan los permisos específicos</li>
+            </ol>
+            <p>Esta ruta te dará una visión completa del sistema antes de explorar perspectivas específicas por rol.</p>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="instructions">
+            <h3>Cómo funciona la demo</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Elige un perfil</h4>
+                    <p>Selecciona el usuario que quieres probar</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Copia las credenciales</h4>
+                    <p>Usa el usuario y contraseña proporcionados</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Ingresa y explora</h4>
+                    <p>Prueba todas las funcionalidades disponibles</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usuarios de Demostración -->
+        <div class="users-section">
+            <h3>Usuarios de Demostración</h3>
+            <div class="users-grid">
+                
+                <!-- Super Administrador -->
+                <div class="user-card recommended">
+                    <div class="card-badge"><i class="bi bi-star-fill"></i> RECOMENDADO PARA EMPEZAR</div>
+                    <div class="user-header">
+                        <div class="user-icon">👑</div>
+                        <div class="user-title">
+                            <h4>Super Administrador</h4>
+                            <p class="user-subtitle">Administrador del sistema</p>
+                        </div>
+                    </div>
+                    <div class="credentials">
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
+                            <span class="credential-value">admin</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
+                            <span class="credential-value">Clave99*</span>
+                        </div>
+                    </div>
+                    <div class="permissions">
+                        <h5>Permisos:</h5>
+                        <ul class="permission-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Acceso total al sistema</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Sin restricciones</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Todos los módulos disponibles</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de usuarios y roles</li>
+                        </ul>
+                    </div>
+                    <a href="https://schoolnext.co/login.html" class="btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Ingresar como Admin
+                    </a>
+                </div>
+
+                <!-- Gestor de Calidad -->
+                <div class="user-card">
+                    <div class="user-header">
+                        <div class="user-icon">🔧</div>
+                        <div class="user-title">
+                            <h4>Gestor de Calidad</h4>
+                            <p class="user-subtitle">María Montessori</p>
+                        </div>
+                    </div>
+                    <div class="credentials">
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
+                            <span class="credential-value">mmontessori</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
+                            <span class="credential-value">Clave01@</span>
+                        </div>
+                    </div>
+                    <div class="permissions">
+                        <h5>Permisos principales:</h5>
+                        <ul class="permission-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de indicadores</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Análisis de mejora continua</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de indicadores</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de encuestas</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de PQR</li>
+                        </ul>
+                    </div>
+                    <a href="https://schoolnext.co/login.html" class="btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                    </a>
+                </div>
+
+                <!-- Gestor de Seguridad -->
+                <div class="user-card">
+                    <div class="user-header">
+                        <div class="user-icon">🔒</div>
+                        <div class="user-title">
+                            <h4>Gestor de Seguridad</h4>
+                            <p class="user-subtitle">Edwards Deming</p>
+                        </div>
+                    </div>
+                    <div class="credentials">
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
+                            <span class="credential-value">edeming</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
+                            <span class="credential-value">Clave01@</span>
+                        </div>
+                    </div>
+                    <div class="permissions">
+                        <h5>Permisos principales:</h5>
+                        <ul class="permission-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de usuarios</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de roles</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Configuración de permisos</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Logs de auditoría</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Asignación de roles</li>
+                        </ul>
+                    </div>
+                    <a href="https://schoolnext.co/login.html" class="btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                    </a>
+                </div>
+
+                <!-- Gestor de Formación -->
+                <div class="user-card">
+                    <div class="user-header">
+                        <div class="user-icon">📚</div>
+                        <div class="user-title">
+                            <h4>Gestor de Formación</h4>
+                            <p class="user-subtitle">Obi-Wan Kenobi</p>
+                        </div>
+                    </div>
+                    <div class="credentials">
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
+                            <span class="credential-value">okenobi</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
+                            <span class="credential-value">Clave01@</span>
+                        </div>
+                    </div>
+                    <div class="permissions">
+                        <h5>Permisos principales:</h5>
+                        <ul class="permission-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de unidades formativas</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de facilitadores</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Generación de rutas formativas</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de formación</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Reportes de formación</li>
+                        </ul>
+                    </div>
+                    <a href="https://schoolnext.co/login.html" class="btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                    </a>
+                </div>
+
+                <!-- Coordinador -->
+                <div class="user-card">
+                    <div class="user-header">
+                        <div class="user-icon">👥</div>
+                        <div class="user-title">
+                            <h4>Coordinador</h4>
+                            <p class="user-subtitle">Diana Prince</p>
+                        </div>
+                    </div>
+                    <div class="credentials">
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
+                            <span class="credential-value">dprince</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
+                            <span class="credential-value">Clave01@</span>
+                        </div>
+                    </div>
+                    <div class="permissions">
+                        <h5>Permisos principales:</h5>
+                        <ul class="permission-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de indicadores</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de mejora</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de procedimientos</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Consulta de rutas formativas</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de tareas</li>
+                        </ul>
+                    </div>
+                    <a href="https://schoolnext.co/login.html" class="btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                    </a>
+                </div>
+
+                <!-- Usuario Base -->
+                <div class="user-card">
+                    <div class="user-header">
+                        <div class="user-icon">👤</div>
+                        <div class="user-title">
+                            <h4>Usuario Base</h4>
+                            <p class="user-subtitle">Forrest Gump</p>
+                        </div>
+                    </div>
+                    <div class="credentials">
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
+                            <span class="credential-value">fgump</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
+                            <span class="credential-value">Clave01@</span>
+                        </div>
+                    </div>
+                    <div class="permissions">
+                        <h5>Permisos principales:</h5>
+                        <ul class="permission-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Ver mi dashboard de formación</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Ver mi ruta formativa</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Solicitar unidades por interés</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Captura de datos</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Gestión de tareas</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Mis solicitudes de procedimientos</li>
+                        </ul>
+                    </div>
+                    <a href="https://schoolnext.co/login.html" class="btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Módulos Disponibles -->
+        <div class="modules-section">
+            <h3>Módulos Disponibles en SchoolNext</h3>
+            <div class="modules-grid">
+                <div class="module-item">
+                    <div class="module-icon">📊</div>
+                    <div class="module-info">
+                        <h4>Indicadores</h4>
+                        <p>Gestión de variables y análisis de datos</p>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-icon">📋</div>
+                    <div class="module-info">
+                        <h4>Encuestas</h4>
+                        <p>Creación y análisis de encuestas</p>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-icon">💬</div>
+                    <div class="module-info">
+                        <h4>PQR</h4>
+                        <p>Gestión de solicitudes y peticiones</p>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-icon">🎓</div>
+                    <div class="module-info">
+                        <h4>Formación</h4>
+                        <p>Rutas formativas y capacitación</p>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-icon">✅</div>
+                    <div class="module-info">
+                        <h4>Gestión de Tareas</h4>
+                        <p>Organización y seguimiento de tareas</p>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-icon">🔄</div>
+                    <div class="module-info">
+                        <h4>Procedimientos</h4>
+                        <p>Gestión de procesos institucionales</p>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-icon">🔧</div>
+                    <div class="module-info">
+                        <h4>Configuración</h4>
+                        <p>Personalización del sistema</p>
+                    </div>
+                </div>
+                <div class="module-item">
+                    <div class="module-icon">🔒</div>
+                    <div class="module-info">
+                        <h4>Seguridad</h4>
+                        <p>Usuarios, roles y permisos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Caja de Información -->
+        <div class="info-box">
+            <h3><i class="bi bi-info-circle-fill"></i> Datos de demostración</h3>
+            <p>La base de datos de prueba se reinicia automáticamente cada 24 horas con la información inicial. Todos los cambios que realices durante tu exploración serán temporales y no afectarán a otros usuarios.</p>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 <span id="footer-name">SchoolNext</span>. Todos los derechos reservados.</p>
+        <p>Sistema de Gestión Educativa SaaS</p>
+    </footer>
+
+    <script>
+        // Cargar configuración y aplicar al contenido
+        document.addEventListener('DOMContentLoaded', async () => {
+            const config = await loadSiteConfig();
+            
+            // Actualizar nombre del sitio
+            if (config.site_name) {
+                document.getElementById('site-name').textContent = config.site_name;
+                document.getElementById('footer-name').textContent = config.site_name;
+            }
+        });
+    </script>
+</body>
+</html>
