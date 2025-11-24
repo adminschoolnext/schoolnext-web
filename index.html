@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SchoolNext - Sistema de Gestión Educativa</title>
     
-    <!-- Cargar config.js -->
-    <script src="config.js"></script>
-    
     <style>
-        /* Variables CSS para colores dinámicos */
         :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --tertiary-color: #764ba2;
+            --primary-color: #1B365D;
+            --secondary-color: #667eea;
         }
         
         * {
@@ -24,224 +19,58 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-        
-        /* Header */
-        header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 1rem 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 0 2rem;
-        }
-        
-        .logo h1 {
-            font-size: 1.8rem;
-        }
-        
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-        
-        .nav-menu a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-menu a:hover {
-            opacity: 0.8;
-        }
-        
-        /* Hero Section */
-        .hero {
-            margin-top: 80px;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
-            padding: 6rem 2rem;
             text-align: center;
+            padding: 2rem;
         }
         
-        .hero h2 {
+        .container {
+            max-width: 600px;
+        }
+        
+        h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background: white;
-            color: var(--primary-color);
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        
-        /* Features Section */
-        .features {
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 0 2rem;
-        }
-        
-        .features h3 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: var(--primary-color);
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .feature-card {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .feature-card h4 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
+        p {
             font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
         }
         
-        /* Footer */
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+        
         footer {
-            background: #2c3e50;
-            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem;
             text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-menu {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .hero h2 {
-                font-size: 2rem;
-            }
+            font-size: 0.9rem;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <h1 id="site-name">SchoolNext</h1>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#caracteristicas">Características</a></li>
-                <li><a href="demo.html">Demo</a></li>
-                <li><a href="https://schoolnext.co/login.html">Ingresar</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section class="hero" id="inicio">
-        <h2 id="hero-title">Sistema de Gestión Educativa en la Nube</h2>
-        <p id="hero-subtitle">La solución completa para la administración moderna de instituciones educativas</p>
-        <a href="demo.html" class="cta-button">Solicitar Demo</a>
-    </section>
-
-    <section class="features" id="caracteristicas">
-        <h3>¿Por qué elegir SchoolNext?</h3>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h4>🎓 Gestión Académica</h4>
-                <p>Control completo de estudiantes, docentes, notas y asistencia desde una sola plataforma.</p>
-            </div>
-            <div class="feature-card">
-                <h4>☁️ 100% en la Nube</h4>
-                <p>Accede desde cualquier lugar, en cualquier momento. Sin instalaciones ni mantenimiento.</p>
-            </div>
-            <div class="feature-card">
-                <h4>🔒 Seguridad Garantizada</h4>
-                <p>Tus datos protegidos con los más altos estándares de seguridad y encriptación.</p>
-            </div>
-            <div class="feature-card">
-                <h4>📊 Reportes en Tiempo Real</h4>
-                <p>Toma decisiones informadas con dashboards y reportes actualizados al instante.</p>
-            </div>
-            <div class="feature-card">
-                <h4>💰 Costo Predecible</h4>
-                <p>Sin sorpresas. Modelo SaaS con mensualidad fija y sin costos ocultos.</p>
-            </div>
-            <div class="feature-card">
-                <h4>🚀 Actualizaciones Automáticas</h4>
-                <p>Siempre tendrás la última versión con nuevas funcionalidades sin cargo adicional.</p>
-            </div>
-        </div>
-    </section>
-
+    <div class="container">
+        <div class="icon">🎓</div>
+        <h1>SchoolNext</h1>
+        <p>Pronto al servicio de la gestión educativa</p>
+    </div>
+    
     <footer>
-        <p>&copy; 2025 <span id="footer-name">SchoolNext</span>. Todos los derechos reservados.</p>
-        <p>Sistema de Gestión Educativa SaaS</p>
+        <p>&copy; 2025 SchoolNext. Todos los derechos reservados.</p>
     </footer>
-
-    <script>
-        // Cargar configuración y aplicar al contenido
-        document.addEventListener('DOMContentLoaded', async () => {
-            const config = await loadSiteConfig();
-            
-            // Actualizar textos dinámicos
-            if (config.site_name) {
-                document.getElementById('site-name').textContent = config.site_name;
-                document.getElementById('footer-name').textContent = config.site_name;
-            }
-            
-            if (config.hero_title) {
-                document.getElementById('hero-title').textContent = config.hero_title;
-            }
-            
-            if (config.hero_subtitle) {
-                document.getElementById('hero-subtitle').textContent = config.hero_subtitle;
-            }
-        });
-    </script>
 </body>
 </html>
