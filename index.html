@@ -1075,8 +1075,7 @@
             grid-column: span 3;
             background: var(--gradient-hero);
             border: none;
-            display: grid;
-            grid-template-columns: auto 1fr auto;
+            display: flex;
             align-items: center;
             gap: 2rem;
             padding: 2.5rem 3rem;
@@ -1086,12 +1085,17 @@
             background: rgba(255, 255, 255, 0.15);
             width: 72px;
             height: 72px;
+            flex-shrink: 0;
         }
 
         .tech-featured .tech-icon svg {
             width: 36px;
             height: 36px;
             fill: white;
+        }
+
+        .tech-featured-content {
+            flex: 1;
         }
 
         .tech-featured h3 {
@@ -1110,11 +1114,12 @@
         .tech-badge {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.25rem;
             border-radius: 50px;
             font-size: 0.85rem;
             font-weight: 600;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .tech-icon {
@@ -1150,24 +1155,28 @@
 
         @media (max-width: 1024px) {
             .tech-card.tech-featured {
-                grid-column: span 1;
-                grid-template-columns: 1fr;
+                grid-column: span 3;
+                flex-direction: column;
                 text-align: center;
-                gap: 1rem;
+                gap: 1.5rem;
             }
 
             .tech-featured .tech-icon {
-                margin: 0 auto 1rem;
+                margin: 0 auto;
             }
 
-            .tech-badge {
-                margin-top: 1rem;
+            .tech-featured-content {
+                text-align: center;
             }
         }
 
         @media (max-width: 768px) {
             .tech-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .tech-card.tech-featured {
+                grid-column: span 1;
             }
         }
 
@@ -1660,7 +1669,7 @@
             <div class="section-header">
                 <span class="section-label">La Solución</span>
                 <h2>7 Módulos, Una Sola Plataforma</h2>
-                <p>Todo lo que necesita tu institución para operar de forma eficiente, integrado y sincronizado.</p>
+                <p>La solución integral y sincronizada que tu institución necesita para operar con eficiencia.</p>
             </div>
             <div class="modules-grid">
                 <!-- Indicadores -->
@@ -1962,8 +1971,10 @@
                     <div class="tech-icon">
                         <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
                     </div>
-                    <h3>Tu Propia Base de Datos</h3>
-                    <p>Cada institución opera con su base de datos independiente. Tus datos son 100% tuyos, completamente aislados de otras instituciones. Máxima privacidad y control.</p>
+                    <div class="tech-featured-content">
+                        <h3>Tu Propia Base de Datos</h3>
+                        <p>Cada institución opera con su base de datos independiente. Tus datos son 100% tuyos, completamente aislados de otras instituciones. Máxima privacidad y control.</p>
+                    </div>
                     <div class="tech-badge">Arquitectura Multi-Instancia</div>
                 </div>
                 <div class="tech-card">
