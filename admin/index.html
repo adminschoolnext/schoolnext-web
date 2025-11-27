@@ -456,6 +456,199 @@
             font-size: 0.85rem;
         }
         
+        /* Config Section Styles */
+        .config-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .config-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .config-section:last-child {
+            border-bottom: none;
+        }
+        
+        .config-section h3 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        
+        .color-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .color-input-group input[type="color"] {
+            width: 50px;
+            height: 38px;
+            padding: 2px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .color-input-group input[type="text"] {
+            flex: 1;
+        }
+        
+        .preview-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-box h4 {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .color-preview {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .color-swatch {
+            width: 80px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .logo-preview {
+            max-width: 200px;
+            max-height: 60px;
+            margin-top: 0.5rem;
+        }
+        
+        .favicon-preview {
+            width: 32px;
+            height: 32px;
+            margin-top: 0.5rem;
+        }
+        
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .config-actions {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .notification-fields {
+            display: none;
+        }
+        
+        .notification-fields.show {
+            display: block;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .main-container {
@@ -486,6 +679,10 @@
                 padding: 0.75rem;
                 font-size: 0.85rem;
             }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -514,6 +711,9 @@
             </button>
             <button class="nav-item" data-section="actualizaciones">
                 <i class="bi bi-megaphone"></i> Actualizaciones
+            </button>
+            <button class="nav-item" data-section="configuracion">
+                <i class="bi bi-sliders"></i> Configuración
             </button>
         </nav>
 
@@ -671,6 +871,153 @@
                         <tbody id="table-actualizaciones">
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- Sección Configuración -->
+            <section id="section-configuracion" style="display: none;">
+                <div class="content-header">
+                    <h2><i class="bi bi-sliders"></i> Configuración del Sitio</h2>
+                </div>
+                
+                <div id="config-alert"></div>
+                
+                <div class="config-container">
+                    <!-- Información General -->
+                    <div class="config-section">
+                        <h3><i class="bi bi-info-circle"></i> Información General</h3>
+                        <div class="config-grid">
+                            <div class="form-group">
+                                <label>Nombre del Sitio *</label>
+                                <input type="text" id="config-site-name" placeholder="Ej: SchoolNext">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Colores del Tema -->
+                    <div class="config-section">
+                        <h3><i class="bi bi-palette"></i> Colores del Tema</h3>
+                        <div class="config-grid">
+                            <div class="form-group">
+                                <label>Color Primario *</label>
+                                <div class="color-input-group">
+                                    <input type="color" id="config-primary-color-picker" value="#667eea" onchange="syncColorInput('primary')">
+                                    <input type="text" id="config-primary-color" placeholder="#667eea" oninput="syncColorPicker('primary')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Color Secundario *</label>
+                                <div class="color-input-group">
+                                    <input type="color" id="config-secondary-color-picker" value="#764ba2" onchange="syncColorInput('secondary')">
+                                    <input type="text" id="config-secondary-color" placeholder="#764ba2" oninput="syncColorPicker('secondary')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Color Terciario</label>
+                                <div class="color-input-group">
+                                    <input type="color" id="config-tertiary-color-picker" value="#5FB09C" onchange="syncColorInput('tertiary')">
+                                    <input type="text" id="config-tertiary-color" placeholder="#5FB09C (opcional)" oninput="syncColorPicker('tertiary')">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-box">
+                            <h4>Vista previa de colores</h4>
+                            <div class="color-preview">
+                                <div class="color-swatch" id="preview-primary">Primario</div>
+                                <div class="color-swatch" id="preview-secondary">Secundario</div>
+                                <div class="color-swatch" id="preview-tertiary">Terciario</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Imágenes -->
+                    <div class="config-section">
+                        <h3><i class="bi bi-image"></i> Imágenes</h3>
+                        <div class="config-grid">
+                            <div class="form-group">
+                                <label>URL del Logo</label>
+                                <input type="url" id="config-logo-url" placeholder="https://ejemplo.com/logo.png" oninput="previewImage('logo')">
+                                <img id="preview-logo" class="logo-preview" style="display: none;" alt="Preview Logo">
+                            </div>
+                            <div class="form-group">
+                                <label>URL del Favicon</label>
+                                <input type="url" id="config-favicon-url" placeholder="https://ejemplo.com/favicon.ico" oninput="previewImage('favicon')">
+                                <img id="preview-favicon" class="favicon-preview" style="display: none;" alt="Preview Favicon">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hero Section -->
+                    <div class="config-section">
+                        <h3><i class="bi bi-card-heading"></i> Sección Hero</h3>
+                        <div class="config-grid">
+                            <div class="form-group">
+                                <label>Título del Hero</label>
+                                <input type="text" id="config-hero-title" placeholder="Bienvenido a SchoolNext">
+                            </div>
+                            <div class="form-group">
+                                <label>Subtítulo del Hero</label>
+                                <input type="text" id="config-hero-subtitle" placeholder="Tu plataforma educativa">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notificaciones -->
+                    <div class="config-section">
+                        <h3><i class="bi bi-bell"></i> Notificaciones</h3>
+                        <div class="form-group">
+                            <div class="switch-container">
+                                <label class="switch">
+                                    <input type="checkbox" id="config-notification-enabled" onchange="toggleNotificationFields()">
+                                    <span class="slider"></span>
+                                </label>
+                                <span>Habilitar notificaciones</span>
+                            </div>
+                        </div>
+                        <div id="notification-fields" class="notification-fields">
+                            <div class="config-grid">
+                                <div class="form-group">
+                                    <label>Tipo de Notificación</label>
+                                    <select id="config-notification-type">
+                                        <option value="">Seleccione...</option>
+                                        <option value="email">Email</option>
+                                        <option value="webhook">Webhook</option>
+                                        <option value="slack">Slack</option>
+                                        <option value="teams">Microsoft Teams</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Endpoint de Notificación</label>
+                                    <input type="url" id="config-notification-endpoint" placeholder="https://hooks.slack.com/...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- reCAPTCHA -->
+                    <div class="config-section">
+                        <h3><i class="bi bi-shield-check"></i> reCAPTCHA</h3>
+                        <div class="config-grid">
+                            <div class="form-group">
+                                <label>Site Key</label>
+                                <input type="text" id="config-recaptcha-site-key" placeholder="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI">
+                            </div>
+                            <div class="form-group">
+                                <label>Secret Key</label>
+                                <input type="password" id="config-recaptcha-secret-key" placeholder="••••••••••••••••">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Acciones -->
+                    <div class="config-actions">
+                        <button class="btn-secondary" onclick="loadConfig()">
+                            <i class="bi bi-arrow-counterclockwise"></i> Restablecer
+                        </button>
+                        <button class="btn-success" onclick="saveConfig()">
+                            <i class="bi bi-check-lg"></i> Guardar Configuración
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
@@ -870,6 +1217,7 @@
         let allClients = [];
         let allUpdates = [];
         let currentRequestId = null;
+        let currentConfig = null;
         
         // ==========================================
         // INICIALIZACIÓN
@@ -890,6 +1238,7 @@
             loadClients();
             loadUsers();
             loadUpdates();
+            loadConfig();
             
             // Event listeners para navegación
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -1330,77 +1679,6 @@
         }
         
         // ==========================================
-        // UTILIDADES
-        // ==========================================
-        function openModal(type) {
-            if (type === 'client') {
-                document.getElementById('modal-client-title').textContent = 'Nuevo Cliente';
-                document.getElementById('client-id').value = '';
-                document.getElementById('client-name').value = '';
-                document.getElementById('client-admin-name').value = '';
-                document.getElementById('client-email').value = '';
-                document.getElementById('client-api-key').value = '';
-            } else if (type === 'user') {
-                document.getElementById('modal-user-title').textContent = 'Nuevo Usuario';
-                document.getElementById('user-id').value = '';
-                document.getElementById('user-username').value = '';
-                document.getElementById('user-fullname').value = '';
-                document.getElementById('user-email').value = '';
-                document.getElementById('user-password').value = '';
-                document.getElementById('password-hint').textContent = '(requerida)';
-            } else if (type === 'update') {
-                document.getElementById('modal-update-title').textContent = 'Nueva Actualización';
-                document.getElementById('update-id').value = '';
-                document.getElementById('update-module').value = '';
-                document.getElementById('update-feature').value = '';
-                document.getElementById('update-version').value = '';
-                document.getElementById('update-detail').value = '';
-                document.getElementById('update-published').checked = true;
-            }
-            document.getElementById(`modal-${type}`).classList.add('show');
-        }
-        
-        function closeModal(type) {
-            document.getElementById(`modal-${type}`).classList.remove('show');
-        }
-        
-        function getStatusClass(status) {
-            const classes = {
-                'pendiente': 'pending',
-                'en_proceso': 'progress',
-                'resuelto': 'resolved',
-                'cerrado': 'closed'
-            };
-            return classes[status] || 'pending';
-        }
-        
-        function getStatusLabel(status) {
-            const labels = {
-                'pendiente': 'Pendiente',
-                'en_proceso': 'En Proceso',
-                'resuelto': 'Resuelto',
-                'cerrado': 'Cerrado'
-            };
-            return labels[status] || status;
-        }
-        
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('es-CO', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-        
-        function logout() {
-            sessionStorage.removeItem('user');
-            window.location.href = '../login.html';
-        }
-        
-        // ==========================================
         // CARGAR ACTUALIZACIONES
         // ==========================================
         async function loadUpdates() {
@@ -1600,6 +1878,321 @@
             } catch (error) {
                 console.error('Error eliminando actualización:', error);
             }
+        }
+        
+        // ==========================================
+        // CONFIGURACIÓN DEL SITIO
+        // ==========================================
+        async function loadConfig() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/config?select=*&limit=1`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                        }
+                    }
+                );
+                const configs = await response.json();
+                
+                if (configs.length > 0) {
+                    currentConfig = configs[0];
+                    populateConfigForm(currentConfig);
+                } else {
+                    // No hay configuración, usar valores por defecto
+                    currentConfig = null;
+                    resetConfigForm();
+                }
+            } catch (error) {
+                console.error('Error cargando configuración:', error);
+                showConfigAlert('Error al cargar la configuración', 'error');
+            }
+        }
+        
+        function populateConfigForm(config) {
+            // Información General
+            document.getElementById('config-site-name').value = config.site_name || '';
+            
+            // Colores
+            document.getElementById('config-primary-color').value = config.primary_color || '#667eea';
+            document.getElementById('config-primary-color-picker').value = config.primary_color || '#667eea';
+            document.getElementById('config-secondary-color').value = config.secondary_color || '#764ba2';
+            document.getElementById('config-secondary-color-picker').value = config.secondary_color || '#764ba2';
+            document.getElementById('config-tertiary-color').value = config.tertiary_color || '';
+            document.getElementById('config-tertiary-color-picker').value = config.tertiary_color || '#5FB09C';
+            
+            // Actualizar preview de colores
+            updateColorPreviews();
+            
+            // Imágenes
+            document.getElementById('config-logo-url').value = config.logo_url || '';
+            document.getElementById('config-favicon-url').value = config.favicon_url || '';
+            previewImage('logo');
+            previewImage('favicon');
+            
+            // Hero
+            document.getElementById('config-hero-title').value = config.hero_title || '';
+            document.getElementById('config-hero-subtitle').value = config.hero_subtitle || '';
+            
+            // Notificaciones
+            document.getElementById('config-notification-enabled').checked = config.notification_enabled || false;
+            document.getElementById('config-notification-type').value = config.notification_type || '';
+            document.getElementById('config-notification-endpoint').value = config.notification_endpoint || '';
+            toggleNotificationFields();
+            
+            // reCAPTCHA
+            document.getElementById('config-recaptcha-site-key').value = config.recaptcha_site_key || '';
+            document.getElementById('config-recaptcha-secret-key').value = config.recaptcha_secret_key || '';
+        }
+        
+        function resetConfigForm() {
+            document.getElementById('config-site-name').value = '';
+            document.getElementById('config-primary-color').value = '#667eea';
+            document.getElementById('config-primary-color-picker').value = '#667eea';
+            document.getElementById('config-secondary-color').value = '#764ba2';
+            document.getElementById('config-secondary-color-picker').value = '#764ba2';
+            document.getElementById('config-tertiary-color').value = '';
+            document.getElementById('config-tertiary-color-picker').value = '#5FB09C';
+            document.getElementById('config-logo-url').value = '';
+            document.getElementById('config-favicon-url').value = '';
+            document.getElementById('config-hero-title').value = '';
+            document.getElementById('config-hero-subtitle').value = '';
+            document.getElementById('config-notification-enabled').checked = false;
+            document.getElementById('config-notification-type').value = '';
+            document.getElementById('config-notification-endpoint').value = '';
+            document.getElementById('config-recaptcha-site-key').value = '';
+            document.getElementById('config-recaptcha-secret-key').value = '';
+            
+            updateColorPreviews();
+            toggleNotificationFields();
+            
+            document.getElementById('preview-logo').style.display = 'none';
+            document.getElementById('preview-favicon').style.display = 'none';
+        }
+        
+        async function saveConfig() {
+            const data = {
+                site_name: document.getElementById('config-site-name').value,
+                primary_color: document.getElementById('config-primary-color').value || '#667eea',
+                secondary_color: document.getElementById('config-secondary-color').value || '#764ba2',
+                tertiary_color: document.getElementById('config-tertiary-color').value || null,
+                logo_url: document.getElementById('config-logo-url').value || null,
+                favicon_url: document.getElementById('config-favicon-url').value || null,
+                hero_title: document.getElementById('config-hero-title').value || null,
+                hero_subtitle: document.getElementById('config-hero-subtitle').value || null,
+                notification_enabled: document.getElementById('config-notification-enabled').checked,
+                notification_type: document.getElementById('config-notification-type').value || null,
+                notification_endpoint: document.getElementById('config-notification-endpoint').value || null,
+                recaptcha_site_key: document.getElementById('config-recaptcha-site-key').value || null,
+                recaptcha_secret_key: document.getElementById('config-recaptcha-secret-key').value || null,
+                updated_at: new Date().toISOString()
+            };
+            
+            // Validaciones
+            if (!data.site_name) {
+                showConfigAlert('El nombre del sitio es requerido', 'error');
+                return;
+            }
+            
+            if (!isValidColor(data.primary_color) || !isValidColor(data.secondary_color)) {
+                showConfigAlert('Los colores primario y secundario deben ser válidos (formato hex)', 'error');
+                return;
+            }
+            
+            try {
+                let url, method;
+                
+                if (currentConfig && currentConfig.id) {
+                    // Actualizar registro existente
+                    url = `${SUPABASE_CONFIG.url}/rest/v1/config?id=eq.${currentConfig.id}`;
+                    method = 'PATCH';
+                } else {
+                    // Crear nuevo registro
+                    url = `${SUPABASE_CONFIG.url}/rest/v1/config`;
+                    method = 'POST';
+                }
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (Array.isArray(result) && result.length > 0) {
+                        currentConfig = result[0];
+                    }
+                    
+                    showConfigAlert('Configuración guardada exitosamente', 'success');
+                    
+                    // Actualizar nombre del sitio en el header y footer
+                    if (data.site_name) {
+                        document.getElementById('site-name').textContent = data.site_name;
+                        document.getElementById('footer-name').textContent = data.site_name;
+                    }
+                    
+                    // Recargar la configuración
+                    loadConfig();
+                } else {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+            } catch (error) {
+                console.error('Error guardando configuración:', error);
+                showConfigAlert('Error al guardar la configuración', 'error');
+            }
+        }
+        
+        // ==========================================
+        // FUNCIONES AUXILIARES DE CONFIGURACIÓN
+        // ==========================================
+        function syncColorInput(type) {
+            const picker = document.getElementById(`config-${type}-color-picker`);
+            const input = document.getElementById(`config-${type}-color`);
+            input.value = picker.value;
+            updateColorPreviews();
+        }
+        
+        function syncColorPicker(type) {
+            const picker = document.getElementById(`config-${type}-color-picker`);
+            const input = document.getElementById(`config-${type}-color`);
+            if (isValidColor(input.value)) {
+                picker.value = input.value;
+            }
+            updateColorPreviews();
+        }
+        
+        function updateColorPreviews() {
+            const primary = document.getElementById('config-primary-color').value || '#667eea';
+            const secondary = document.getElementById('config-secondary-color').value || '#764ba2';
+            const tertiary = document.getElementById('config-tertiary-color').value || '#5FB09C';
+            
+            document.getElementById('preview-primary').style.backgroundColor = primary;
+            document.getElementById('preview-secondary').style.backgroundColor = secondary;
+            document.getElementById('preview-tertiary').style.backgroundColor = tertiary;
+        }
+        
+        function isValidColor(color) {
+            if (!color) return false;
+            return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
+        }
+        
+        function previewImage(type) {
+            const input = document.getElementById(`config-${type}-url`);
+            const preview = document.getElementById(`preview-${type}`);
+            
+            if (input.value) {
+                preview.src = input.value;
+                preview.style.display = 'block';
+                preview.onerror = () => {
+                    preview.style.display = 'none';
+                };
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        function toggleNotificationFields() {
+            const enabled = document.getElementById('config-notification-enabled').checked;
+            const fields = document.getElementById('notification-fields');
+            
+            if (enabled) {
+                fields.classList.add('show');
+            } else {
+                fields.classList.remove('show');
+            }
+        }
+        
+        function showConfigAlert(message, type) {
+            const alertContainer = document.getElementById('config-alert');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+        
+        // ==========================================
+        // UTILIDADES GENERALES
+        // ==========================================
+        function openModal(type) {
+            if (type === 'client') {
+                document.getElementById('modal-client-title').textContent = 'Nuevo Cliente';
+                document.getElementById('client-id').value = '';
+                document.getElementById('client-name').value = '';
+                document.getElementById('client-admin-name').value = '';
+                document.getElementById('client-email').value = '';
+                document.getElementById('client-api-key').value = '';
+            } else if (type === 'user') {
+                document.getElementById('modal-user-title').textContent = 'Nuevo Usuario';
+                document.getElementById('user-id').value = '';
+                document.getElementById('user-username').value = '';
+                document.getElementById('user-fullname').value = '';
+                document.getElementById('user-email').value = '';
+                document.getElementById('user-password').value = '';
+                document.getElementById('password-hint').textContent = '(requerida)';
+            } else if (type === 'update') {
+                document.getElementById('modal-update-title').textContent = 'Nueva Actualización';
+                document.getElementById('update-id').value = '';
+                document.getElementById('update-module').value = '';
+                document.getElementById('update-feature').value = '';
+                document.getElementById('update-version').value = '';
+                document.getElementById('update-detail').value = '';
+                document.getElementById('update-published').checked = true;
+            }
+            document.getElementById(`modal-${type}`).classList.add('show');
+        }
+        
+        function closeModal(type) {
+            document.getElementById(`modal-${type}`).classList.remove('show');
+        }
+        
+        function getStatusClass(status) {
+            const classes = {
+                'pendiente': 'pending',
+                'en_proceso': 'progress',
+                'resuelto': 'resolved',
+                'cerrado': 'closed'
+            };
+            return classes[status] || 'pending';
+        }
+        
+        function getStatusLabel(status) {
+            const labels = {
+                'pendiente': 'Pendiente',
+                'en_proceso': 'En Proceso',
+                'resuelto': 'Resuelto',
+                'cerrado': 'Cerrado'
+            };
+            return labels[status] || status;
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('es-CO', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('user');
+            window.location.href = '../login.html';
         }
     </script>
 
