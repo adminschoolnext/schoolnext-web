@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SchoolNext</title>
+    
+    <!-- Cargar config.js -->
+    <script src="config.js"></script>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        /* Variables CSS para colores dinámicos */
+        :root {
+            --primary-color: #1D4E4F;
+            --secondary-color: #2D8B7A;
+            --tertiary-color: #5FB09C;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+        
+        /* Container centrado */
+        .login-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        /* Card del login */
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-header .icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .login-header p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(29, 78, 79, 0.15);
+        }
+        
+        /* Botón submit */
+        .btn-login {
+            display: block;
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-login:hover:not(:disabled) {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .btn-login i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Mensajes de estado */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .message.show {
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        /* Spinner de carga */
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        .spinner.show {
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(0,0,0,0.2);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        footer p {
+            margin: 0;
+            font-size: 0.85rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1rem;
+            }
+            
+            .login-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="icon"><i class="bi bi-shield-lock"></i></div>
+                <h1 id="site-name">SchoolNext</h1>
+                <p>Panel de Administración</p>
+            </div>
+            
+            <!-- Mensajes de estado -->
+            <div id="message" class="message"></div>
+            
+            <form id="loginForm" novalidate>
+                <!-- Usuario -->
+                <div class="form-group">
+                    <label for="username">
+                        <i class="bi bi-person-fill"></i> Usuario
+                    </label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Ingrese su usuario"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+                
+                <!-- Contraseña -->
+                <div class="form-group">
+                    <label for="password">
+                        <i class="bi bi-key-fill"></i> Contraseña
+                    </label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Ingrese su contraseña"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+                
+                <!-- Botón enviar -->
+                <button type="submit" class="btn-login" id="submitBtn">
+                    <span class="spinner" id="spinner"></span>
+                    <i class="bi bi-box-arrow-in-right" id="btnIcon"></i>
+                    <span id="btnText">Ingresar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 <span id="footer-name">SchoolNext</span></p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // ELEMENTOS DEL DOM
+        // ==========================================
+        const form = document.getElementById('loginForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        
+        // ==========================================
+        // FUNCIONES AUXILIARES
+        // ==========================================
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = 'message show ' + type;
+        }
+        
+        function hideMessage() {
+            messageDiv.classList.remove('show');
+        }
+        
+        function setLoading(loading) {
+            submitBtn.disabled = loading;
+            spinner.classList.toggle('show', loading);
+            btnIcon.style.display = loading ? 'none' : 'inline';
+            btnText.textContent = loading ? 'Ingresando...' : 'Ingresar';
+        }
+        
+        // ==========================================
+        // VALIDAR CREDENCIALES
+        // ==========================================
+        async function validateLogin(username, password) {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/users?username=eq.${encodeURIComponent(username)}&password=eq.${encodeURIComponent(password)}&is_active=eq.true&select=id,username,full_name,email`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Error al validar credenciales');
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    return { valid: true, user: data[0] };
+                }
+                
+                return { valid: false };
+            } catch (error) {
+                console.error('Error en login:', error);
+                return { valid: false, error: error.message };
+            }
+        }
+        
+        // ==========================================
+        // ACTUALIZAR ÚLTIMO LOGIN
+        // ==========================================
+        async function updateLastLogin(userId) {
+            try {
+                await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/users?id=eq.${userId}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            last_login: new Date().toISOString()
+                        })
+                    }
+                );
+            } catch (error) {
+                console.error('Error actualizando last_login:', error);
+            }
+        }
+        
+        // ==========================================
+        // ENVÍO DEL FORMULARIO
+        // ==========================================
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideMessage();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // Validaciones
+            if (!username) {
+                showMessage('Por favor ingrese su usuario', 'error');
+                return;
+            }
+            
+            if (!password) {
+                showMessage('Por favor ingrese su contraseña', 'error');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const result = await validateLogin(username, password);
+                
+                if (!result.valid) {
+                    showMessage('Usuario o contraseña incorrectos', 'error');
+                    setLoading(false);
+                    return;
+                }
+                
+                // Actualizar último login
+                await updateLastLogin(result.user.id);
+                
+                // Guardar sesión
+                sessionStorage.setItem('user', JSON.stringify(result.user));
+                
+                showMessage('¡Bienvenido, ' + result.user.full_name + '!', 'success');
+                
+                // Redirigir al dashboard
+                setTimeout(() => {
+                    window.location.href = 'admin/index.html';
+                }, 1000);
+                
+            } catch (error) {
+                showMessage('Error al iniciar sesión. Intente nuevamente.', 'error');
+                console.error('Error:', error);
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        // ==========================================
+        // CARGAR CONFIGURACIÓN DEL SITIO
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verificar si ya hay sesión
+            const user = sessionStorage.getItem('user');
+            if (user) {
+                window.location.href = 'admin/index.html';
+                return;
+            }
+            
+            if (typeof applySiteConfig === 'function') {
+                const config = await applySiteConfig();
+                
+                if (config.site_name) {
+                    document.getElementById('site-name').textContent = config.site_name;
+                    document.getElementById('footer-name').textContent = config.site_name;
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
