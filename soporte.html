@@ -11,8 +11,8 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
-    <!-- reCAPTCHA -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- reCAPTCHA (carga explícita) -->
+    <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
     
     <style>
         /* Variables CSS para colores dinámicos */
@@ -444,12 +444,8 @@
 
     <script>
         // ==========================================
-        // CONFIGURACIÓN
+        // USAR CONFIGURACIÓN DE config.js
         // ==========================================
-        const SUPABASE_CONFIG = {
-            url: 'https://rqteyrmguczrjiaqxppu.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGV5cm1ndWN6cmppYXF4cHB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzczNDcsImV4cCI6MjA3OTUxMzM0N30.ApTukbdfmhl2qVFpGJNC-sLeLTocEneRbZK0has0syI'
-        };
         
         // ==========================================
         // ELEMENTOS DEL DOM
@@ -723,6 +719,8 @@
         // ==========================================
         // CARGAR CONFIGURACIÓN DEL SITIO
         // ==========================================
+        let recaptchaWidgetId = null;
+        
         document.addEventListener('DOMContentLoaded', async function() {
             if (typeof applySiteConfig === 'function') {
                 const config = await applySiteConfig();
@@ -732,18 +730,20 @@
                     document.getElementById('footer-name').textContent = config.site_name;
                 }
                 
-                // Actualizar reCAPTCHA site key
+                // Renderizar reCAPTCHA cuando esté listo
                 if (config.recaptcha_site_key) {
-                    document.getElementById('recaptcha').setAttribute('data-sitekey', config.recaptcha_site_key);
-                    if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
-                        try {
-                            grecaptcha.render('recaptcha', {
-                                'sitekey': config.recaptcha_site_key
-                            });
-                        } catch (e) {
-                            // Ya renderizado
+                    const waitForRecaptcha = setInterval(() => {
+                        if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+                            clearInterval(waitForRecaptcha);
+                            try {
+                                recaptchaWidgetId = grecaptcha.render('recaptcha', {
+                                    'sitekey': config.recaptcha_site_key
+                                });
+                            } catch (e) {
+                                console.error('Error renderizando reCAPTCHA:', e);
+                            }
                         }
-                    }
+                    }, 100);
                 }
             }
         });
