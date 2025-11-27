@@ -15,10 +15,11 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     
     <style>
+        /* Variables CSS para colores dinámicos */
         :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --tertiary-color: #764ba2;
+            --primary-color: #1D4E4F;
+            --secondary-color: #2D8B7A;
+            --tertiary-color: #5FB09C;
         }
         
         * {
@@ -47,10 +48,6 @@
         .hero h1 {
             font-size: 1.5rem;
             margin-bottom: 0.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
         }
         
         .hero p {
@@ -66,12 +63,13 @@
             flex: 1;
         }
         
-        /* Card del formulario */
+        /* Card del formulario - estilo similar a user-card del demo */
         .form-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--primary-color);
         }
         
         .form-card h2 {
@@ -120,7 +118,7 @@
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 0 0 3px rgba(29, 78, 79, 0.15);
         }
         
         .form-group textarea {
@@ -132,6 +130,26 @@
             font-size: 0.8rem;
             color: #6c757d;
             margin-top: 0.3rem;
+        }
+        
+        /* Estilo similar a credentials del demo */
+        .info-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .info-box p {
+            color: #495057;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .info-box i {
+            color: var(--secondary-color);
+            margin-right: 0.5rem;
         }
         
         /* File input personalizado */
@@ -163,7 +181,7 @@
         
         .file-input-label:hover {
             border-color: var(--primary-color);
-            background: #f0f4ff;
+            background: #f0f7f7;
         }
         
         .file-input-label.has-file {
@@ -208,32 +226,34 @@
             justify-content: center;
         }
         
-        /* Botón submit */
+        /* Botón submit - estilo similar a btn-login del demo */
         .btn-submit {
+            display: block;
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: var(--primary-color);
             color: white;
+            padding: 0.75rem;
             border: none;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            text-align: center;
+            transition: background 0.3s, transform 0.2s;
         }
         
         .btn-submit:hover:not(:disabled) {
+            background: var(--secondary-color);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
         .btn-submit:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+        }
+        
+        .btn-submit i {
+            margin-right: 0.5rem;
         }
         
         /* Mensajes de estado */
@@ -269,12 +289,17 @@
         /* Spinner de carga */
         .spinner {
             display: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid #ffffff;
             border-top: 2px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        .spinner.show {
+            display: inline-block;
         }
         
         @keyframes spin {
@@ -282,18 +307,17 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Footer */
+        /* Footer - igual que demo */
         footer {
             background: #2c3e50;
             color: white;
             text-align: center;
-            padding: 1.5rem;
+            padding: 2rem;
             margin-top: auto;
         }
         
         footer p {
-            margin: 0;
-            font-size: 0.9rem;
+            margin: 0.25rem 0;
         }
         
         /* Responsive */
@@ -305,20 +329,29 @@
             .form-card {
                 padding: 1.5rem;
             }
+            
+            .hero h1 {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="hero">
+    <section class="hero">
         <h1><i class="bi bi-headset"></i> Soporte Técnico</h1>
         <p>Envía tu solicitud de soporte o modificación</p>
-    </header>
+    </section>
 
-    <main class="container">
+    <div class="container">
         <div class="form-card">
             <h2>Nueva Solicitud</h2>
             <p class="subtitle">Complete el formulario y nos pondremos en contacto pronto</p>
+            
+            <!-- Info box -->
+            <div class="info-box">
+                <p><i class="bi bi-info-circle-fill"></i> Necesitará su llave de cliente para enviar solicitudes. Si no la tiene, contacte a su administrador.</p>
+            </div>
             
             <!-- Mensajes de estado -->
             <div id="message" class="message"></div>
@@ -327,7 +360,7 @@
                 <!-- Llave del cliente -->
                 <div class="form-group">
                     <label for="apiKey">
-                        <i class="bi bi-key"></i> Llave de Cliente <span class="required">*</span>
+                        <i class="bi bi-key-fill"></i> Llave de Cliente <span class="required">*</span>
                     </label>
                     <input 
                         type="text" 
@@ -336,13 +369,12 @@
                         placeholder="Ingrese su llave de cliente"
                         required
                     >
-                    <p class="hint">La llave fue proporcionada por el administrador de SchoolNext</p>
                 </div>
                 
                 <!-- Tipo de solicitud -->
                 <div class="form-group">
                     <label for="requestType">
-                        <i class="bi bi-tag"></i> Tipo de Solicitud <span class="required">*</span>
+                        <i class="bi bi-tag-fill"></i> Tipo de Solicitud <span class="required">*</span>
                     </label>
                     <select id="requestType" name="requestType" required>
                         <option value="">Seleccione una opción</option>
@@ -354,7 +386,7 @@
                 <!-- Descripción -->
                 <div class="form-group">
                     <label for="description">
-                        <i class="bi bi-chat-text"></i> Descripción <span class="required">*</span>
+                        <i class="bi bi-chat-text-fill"></i> Descripción <span class="required">*</span>
                     </label>
                     <textarea 
                         id="description" 
@@ -368,7 +400,7 @@
                 <!-- Captura de pantalla -->
                 <div class="form-group">
                     <label>
-                        <i class="bi bi-image"></i> Captura de Pantalla <span style="color: #6c757d; font-weight: normal;">(opcional)</span>
+                        <i class="bi bi-image-fill"></i> Captura de Pantalla <span style="color: #6c757d; font-weight: normal;">(opcional)</span>
                     </label>
                     <div class="file-input-wrapper">
                         <input 
@@ -392,21 +424,22 @@
                 
                 <!-- reCAPTCHA -->
                 <div class="recaptcha-container">
-                    <div class="g-recaptcha" data-sitekey="TU_SITE_KEY_AQUI" id="recaptcha"></div>
+                    <div class="g-recaptcha" data-sitekey="SITE_KEY_PLACEHOLDER" id="recaptcha"></div>
                 </div>
                 
                 <!-- Botón enviar -->
                 <button type="submit" class="btn-submit" id="submitBtn">
                     <span class="spinner" id="spinner"></span>
-                    <i class="bi bi-send"></i>
+                    <i class="bi bi-send-fill" id="btnIcon"></i>
                     <span id="btnText">Enviar Solicitud</span>
                 </button>
             </form>
         </div>
-    </main>
+    </div>
 
     <footer>
         <p>&copy; 2025 <span id="footer-name">SchoolNext</span>. Todos los derechos reservados.</p>
+        <p>Sistema de Gestión Educativa SaaS</p>
     </footer>
 
     <script>
@@ -426,6 +459,7 @@
         const submitBtn = document.getElementById('submitBtn');
         const spinner = document.getElementById('spinner');
         const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
         const screenshotInput = document.getElementById('screenshot');
         const fileLabel = document.getElementById('fileLabel');
         const imagePreview = document.getElementById('imagePreview');
@@ -458,7 +492,7 @@
                     previewImg.src = e.target.result;
                     imagePreview.classList.add('show');
                     fileLabel.classList.add('has-file');
-                    fileLabel.innerHTML = '<i class="bi bi-check-circle"></i> <span>' + file.name + '</span>';
+                    fileLabel.innerHTML = '<i class="bi bi-check-circle-fill"></i> <span>' + file.name + '</span>';
                 };
                 reader.readAsDataURL(file);
             }
@@ -477,8 +511,6 @@
         function showMessage(text, type) {
             messageDiv.textContent = text;
             messageDiv.className = 'message show ' + type;
-            
-            // Scroll al mensaje
             messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
@@ -488,7 +520,8 @@
         
         function setLoading(loading) {
             submitBtn.disabled = loading;
-            spinner.style.display = loading ? 'inline-block' : 'none';
+            spinner.classList.toggle('show', loading);
+            btnIcon.style.display = loading ? 'none' : 'inline';
             btnText.textContent = loading ? 'Enviando...' : 'Enviar Solicitud';
         }
         
@@ -552,7 +585,6 @@
                     throw new Error('Error al subir la imagen');
                 }
                 
-                // Retornar URL pública
                 return `${SUPABASE_CONFIG.url}/storage/v1/object/public/support/${fileName}`;
             } catch (error) {
                 console.error('Error subiendo imagen:', error);
@@ -603,13 +635,12 @@
             e.preventDefault();
             hideMessage();
             
-            // Obtener valores
             const apiKey = document.getElementById('apiKey').value.trim();
             const requestType = document.getElementById('requestType').value;
             const description = document.getElementById('description').value.trim();
             const screenshotFile = screenshotInput.files[0];
             
-            // Validaciones básicas
+            // Validaciones
             if (!apiKey) {
                 showMessage('Por favor ingrese su llave de cliente', 'error');
                 return;
@@ -693,7 +724,6 @@
         // CARGAR CONFIGURACIÓN DEL SITIO
         // ==========================================
         document.addEventListener('DOMContentLoaded', async function() {
-            // Si existe la función applySiteConfig del config.js, usarla
             if (typeof applySiteConfig === 'function') {
                 const config = await applySiteConfig();
                 
@@ -702,17 +732,16 @@
                     document.getElementById('footer-name').textContent = config.site_name;
                 }
                 
-                // Actualizar reCAPTCHA site key si está en la config
+                // Actualizar reCAPTCHA site key
                 if (config.recaptcha_site_key) {
                     document.getElementById('recaptcha').setAttribute('data-sitekey', config.recaptcha_site_key);
-                    // Recargar reCAPTCHA con la nueva key
                     if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
                         try {
                             grecaptcha.render('recaptcha', {
                                 'sitekey': config.recaptcha_site_key
                             });
                         } catch (e) {
-                            // Ya renderizado, ignorar
+                            // Ya renderizado
                         }
                     }
                 }
