@@ -512,6 +512,9 @@
             <button class="nav-item" data-section="usuarios">
                 <i class="bi bi-people"></i> Usuarios
             </button>
+            <button class="nav-item" data-section="actualizaciones">
+                <i class="bi bi-megaphone"></i> Actualizaciones
+            </button>
         </nav>
 
         <main class="content">
@@ -625,6 +628,47 @@
                             </tr>
                         </thead>
                         <tbody id="table-usuarios">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sección Actualizaciones -->
+            <section id="section-actualizaciones" style="display: none;">
+                <div class="content-header">
+                    <h2><i class="bi bi-megaphone"></i> Actualizaciones del Sistema</h2>
+                    <button class="btn-primary" onclick="openModal('update')">
+                        <i class="bi bi-plus-lg"></i> Nueva Actualización
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Listado de Actualizaciones</h3>
+                        <div class="table-filters">
+                            <select class="filter-select" id="filter-module">
+                                <option value="">Todos los módulos</option>
+                            </select>
+                            <select class="filter-select" id="filter-published">
+                                <option value="">Todos</option>
+                                <option value="true">Publicados</option>
+                                <option value="false">Borradores</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Módulo</th>
+                                <th>Funcionalidad</th>
+                                <th>Versión</th>
+                                <th>Detalle</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-actualizaciones">
                         </tbody>
                     </table>
                 </div>
@@ -761,6 +805,55 @@
         </div>
     </div>
 
+    <!-- Modal Actualización -->
+    <div class="modal-overlay" id="modal-update">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="bi bi-megaphone"></i> <span id="modal-update-title">Nueva Actualización</span></h3>
+                <button class="modal-close" onclick="closeModal('update')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="update-id">
+                <div class="form-group">
+                    <label>Módulo *</label>
+                    <select id="update-module">
+                        <option value="">Seleccione un módulo</option>
+                        <option value="Indicadores">Indicadores</option>
+                        <option value="Encuestas">Encuestas</option>
+                        <option value="PQR">PQR</option>
+                        <option value="Formación">Formación</option>
+                        <option value="Tareas">Tareas</option>
+                        <option value="Procedimientos">Procedimientos</option>
+                        <option value="Configuración">Configuración</option>
+                        <option value="Seguridad">Seguridad</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Funcionalidad *</label>
+                    <input type="text" id="update-feature" placeholder="Ej: Dashboard de indicadores">
+                </div>
+                <div class="form-group">
+                    <label>Versión *</label>
+                    <input type="text" id="update-version" placeholder="Ej: 1.0.0">
+                </div>
+                <div class="form-group">
+                    <label>Detalle *</label>
+                    <textarea id="update-detail" placeholder="Descripción detallada de la actualización..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="update-published" checked> Publicar inmediatamente
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('update')">Cancelar</button>
+                <button class="btn-primary" onclick="saveUpdate()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==========================================
         // VERIFICAR SESIÓN
@@ -775,6 +868,7 @@
         // ==========================================
         let allRequests = [];
         let allClients = [];
+        let allUpdates = [];
         let currentRequestId = null;
         
         // ==========================================
@@ -795,6 +889,7 @@
             loadRequests();
             loadClients();
             loadUsers();
+            loadUpdates();
             
             // Event listeners para navegación
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -804,6 +899,8 @@
             // Event listeners para filtros
             document.getElementById('filter-status').addEventListener('change', filterRequests);
             document.getElementById('filter-type').addEventListener('change', filterRequests);
+            document.getElementById('filter-module').addEventListener('change', filterUpdates);
+            document.getElementById('filter-published').addEventListener('change', filterUpdates);
         });
         
         // ==========================================
@@ -1251,6 +1348,14 @@
                 document.getElementById('user-email').value = '';
                 document.getElementById('user-password').value = '';
                 document.getElementById('password-hint').textContent = '(requerida)';
+            } else if (type === 'update') {
+                document.getElementById('modal-update-title').textContent = 'Nueva Actualización';
+                document.getElementById('update-id').value = '';
+                document.getElementById('update-module').value = '';
+                document.getElementById('update-feature').value = '';
+                document.getElementById('update-version').value = '';
+                document.getElementById('update-detail').value = '';
+                document.getElementById('update-published').checked = true;
             }
             document.getElementById(`modal-${type}`).classList.add('show');
         }
@@ -1293,6 +1398,208 @@
         function logout() {
             sessionStorage.removeItem('user');
             window.location.href = '../login.html';
+        }
+        
+        // ==========================================
+        // CARGAR ACTUALIZACIONES
+        // ==========================================
+        async function loadUpdates() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/updates?select=*&order=published_at.desc`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                        }
+                    }
+                );
+                allUpdates = await response.json();
+                renderUpdates(allUpdates);
+                populateModuleFilter();
+            } catch (error) {
+                console.error('Error cargando actualizaciones:', error);
+            }
+        }
+        
+        function renderUpdates(updates) {
+            const tbody = document.getElementById('table-actualizaciones');
+            
+            if (updates.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="bi bi-megaphone"></i>
+                                <p>No hay actualizaciones registradas</p>
+                            </div>
+                        </td>
+                    </tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = updates.map(u => `
+                <tr>
+                    <td><strong>${u.module}</strong></td>
+                    <td>${u.feature}</td>
+                    <td><code style="background: #f8f9fa; padding: 0.2rem 0.5rem; border-radius: 4px;">${u.version}</code></td>
+                    <td>${u.detail.substring(0, 60)}${u.detail.length > 60 ? '...' : ''}</td>
+                    <td><span class="badge ${u.is_published ? 'badge-resolved' : 'badge-pending'}">${u.is_published ? 'Publicado' : 'Borrador'}</span></td>
+                    <td>${formatDate(u.published_at)}</td>
+                    <td>
+                        <button class="btn-action" onclick="editUpdate(${u.id})" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn-action" onclick="toggleUpdateStatus(${u.id}, ${u.is_published})" title="${u.is_published ? 'Despublicar' : 'Publicar'}">
+                            <i class="bi bi-${u.is_published ? 'eye-slash' : 'eye'}"></i>
+                        </button>
+                        <button class="btn-action" onclick="deleteUpdate(${u.id})" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function populateModuleFilter() {
+            const modules = [...new Set(allUpdates.map(u => u.module))];
+            const select = document.getElementById('filter-module');
+            select.innerHTML = '<option value="">Todos los módulos</option>' + 
+                modules.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+        
+        function filterUpdates() {
+            const moduleFilter = document.getElementById('filter-module').value;
+            const publishedFilter = document.getElementById('filter-published').value;
+            
+            let filtered = allUpdates;
+            
+            if (moduleFilter) {
+                filtered = filtered.filter(u => u.module === moduleFilter);
+            }
+            if (publishedFilter !== '') {
+                filtered = filtered.filter(u => u.is_published === (publishedFilter === 'true'));
+            }
+            
+            renderUpdates(filtered);
+        }
+        
+        async function editUpdate(id) {
+            const update = allUpdates.find(u => u.id === id);
+            if (!update) return;
+            
+            document.getElementById('modal-update-title').textContent = 'Editar Actualización';
+            document.getElementById('update-id').value = id;
+            document.getElementById('update-module').value = update.module;
+            document.getElementById('update-feature').value = update.feature;
+            document.getElementById('update-version').value = update.version;
+            document.getElementById('update-detail').value = update.detail;
+            document.getElementById('update-published').checked = update.is_published;
+            
+            openModal('update');
+        }
+        
+        async function saveUpdate() {
+            const id = document.getElementById('update-id').value;
+            const isPublished = document.getElementById('update-published').checked;
+            const data = {
+                module: document.getElementById('update-module').value,
+                feature: document.getElementById('update-feature').value,
+                version: document.getElementById('update-version').value,
+                detail: document.getElementById('update-detail').value,
+                is_published: isPublished,
+                updated_at: new Date().toISOString()
+            };
+            
+            if (!data.module || !data.feature || !data.version || !data.detail) {
+                alert('Todos los campos son requeridos');
+                return;
+            }
+            
+            // Si es nuevo y está publicado, establecer fecha de publicación
+            if (!id && isPublished) {
+                data.published_at = new Date().toISOString();
+            }
+            
+            // Si se está publicando por primera vez
+            if (id && isPublished) {
+                const existing = allUpdates.find(u => u.id === parseInt(id));
+                if (existing && !existing.is_published) {
+                    data.published_at = new Date().toISOString();
+                }
+            }
+            
+            try {
+                const url = id 
+                    ? `${SUPABASE_CONFIG.url}/rest/v1/updates?id=eq.${id}`
+                    : `${SUPABASE_CONFIG.url}/rest/v1/updates`;
+                
+                await fetch(url, {
+                    method: id ? 'PATCH' : 'POST',
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                closeModal('update');
+                loadUpdates();
+            } catch (error) {
+                console.error('Error guardando actualización:', error);
+                alert('Error al guardar la actualización');
+            }
+        }
+        
+        async function toggleUpdateStatus(id, currentStatus) {
+            try {
+                const data = { 
+                    is_published: !currentStatus,
+                    updated_at: new Date().toISOString()
+                };
+                
+                // Si se está publicando, actualizar fecha de publicación
+                if (!currentStatus) {
+                    data.published_at = new Date().toISOString();
+                }
+                
+                await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/updates?id=eq.${id}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    }
+                );
+                loadUpdates();
+            } catch (error) {
+                console.error('Error cambiando estado:', error);
+            }
+        }
+        
+        async function deleteUpdate(id) {
+            if (!confirm('¿Está seguro de eliminar esta actualización?')) return;
+            
+            try {
+                await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/updates?id=eq.${id}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+                        }
+                    }
+                );
+                loadUpdates();
+            } catch (error) {
+                console.error('Error eliminando actualización:', error);
+            }
         }
     </script>
 
