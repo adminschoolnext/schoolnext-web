@@ -1045,6 +1045,131 @@
             font-size: 0.85rem;
         }
 
+        /* ===== TECHNOLOGY SECTION ===== */
+        .technology {
+            padding: 6rem 0;
+            background: var(--light);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .tech-card {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--surface-alt);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tech-card.tech-featured {
+            grid-column: span 3;
+            background: var(--gradient-hero);
+            border: none;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 2rem;
+            padding: 2.5rem 3rem;
+        }
+
+        .tech-featured .tech-icon {
+            background: rgba(255, 255, 255, 0.15);
+            width: 72px;
+            height: 72px;
+        }
+
+        .tech-featured .tech-icon svg {
+            width: 36px;
+            height: 36px;
+            fill: white;
+        }
+
+        .tech-featured h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-featured p {
+            color: rgba(255, 255, 255, 0.85);
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .tech-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--surface-alt);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .tech-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--secondary);
+        }
+
+        .tech-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.75rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+        }
+
+        .tech-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .tech-card.tech-featured {
+                grid-column: span 1;
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .tech-featured .tech-icon {
+                margin: 0 auto 1rem;
+            }
+
+            .tech-badge {
+                margin-top: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* ===== CTA SECTION ===== */
         .cta {
             padding: 6rem 0;
@@ -1818,6 +1943,62 @@
                     <a href="#modulos" class="btn btn-secondary">
                         Ver Funcionalidades
                     </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tecnología y Seguridad -->
+    <section class="technology" id="tecnologia">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Tecnología</span>
+                <h2>Infraestructura de Nivel Empresarial</h2>
+                <p>Tu institución merece tecnología robusta, segura y escalable. SchoolNext está construido para durar.</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-card tech-featured">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                    </div>
+                    <h3>Tu Propia Base de Datos</h3>
+                    <p>Cada institución opera con su base de datos independiente. Tus datos son 100% tuyos, completamente aislados de otras instituciones. Máxima privacidad y control.</p>
+                    <div class="tech-badge">Arquitectura Multi-Instancia</div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/></svg>
+                    </div>
+                    <h3>100% en la Nube</h3>
+                    <p>Sin instalaciones, sin servidores propios. Accede desde cualquier dispositivo, en cualquier lugar. Siempre disponible.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    </div>
+                    <h3>Seguridad Empresarial</h3>
+                    <p>Contraseñas encriptadas con bcrypt, permisos granulares por rol, y logs de auditoría completos para trazabilidad total.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </div>
+                    <h3>Autonomía Total</h3>
+                    <p>Tú controlas todo: usuarios, roles, permisos y configuración. Sin dependencia externa para la operación diaria.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                    </div>
+                    <h3>Tu Marca, Tu Identidad</h3>
+                    <p>Personaliza con tu logo, colores corporativos y nombre. SchoolNext se adapta a tu institución, no al revés.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <svg viewBox="0 0 24 24"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                    </div>
+                    <h3>Escalable</h3>
+                    <p>Arquitectura diseñada para crecer contigo. Desde 50 hasta 5,000+ usuarios sin cambios en la plataforma.</p>
                 </div>
             </div>
         </div>
