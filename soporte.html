@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte - SchoolNext</title>
+    
+    <!-- Cargar config.js -->
+    <script src="config.js"></script>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --tertiary-color: #764ba2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Hero Discreto */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .hero p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        /* Card del formulario */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .form-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .form-card .subtitle {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+        
+        .form-group label .required {
+            color: #dc3545;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group .hint {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.3rem;
+        }
+        
+        /* File input personalizado */
+        .file-input-wrapper {
+            position: relative;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-input-label:hover {
+            border-color: var(--primary-color);
+            background: #f0f4ff;
+        }
+        
+        .file-input-label.has-file {
+            border-color: #28a745;
+            background: #f0fff4;
+            color: #28a745;
+        }
+        
+        /* Preview de imagen */
+        .image-preview {
+            margin-top: 0.75rem;
+            display: none;
+        }
+        
+        .image-preview.show {
+            display: block;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .image-preview .remove-btn {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        /* reCAPTCHA container */
+        .recaptcha-container {
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Botón submit */
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        /* Mensajes de estado */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .message.show {
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        /* Spinner de carga */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+        }
+        
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <h1><i class="bi bi-headset"></i> Soporte Técnico</h1>
+        <p>Envía tu solicitud de soporte o modificación</p>
+    </header>
+
+    <main class="container">
+        <div class="form-card">
+            <h2>Nueva Solicitud</h2>
+            <p class="subtitle">Complete el formulario y nos pondremos en contacto pronto</p>
+            
+            <!-- Mensajes de estado -->
+            <div id="message" class="message"></div>
+            
+            <form id="supportForm" novalidate>
+                <!-- Llave del cliente -->
+                <div class="form-group">
+                    <label for="apiKey">
+                        <i class="bi bi-key"></i> Llave de Cliente <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="apiKey" 
+                        name="apiKey" 
+                        placeholder="Ingrese su llave de cliente"
+                        required
+                    >
+                    <p class="hint">La llave fue proporcionada por el administrador de SchoolNext</p>
+                </div>
+                
+                <!-- Tipo de solicitud -->
+                <div class="form-group">
+                    <label for="requestType">
+                        <i class="bi bi-tag"></i> Tipo de Solicitud <span class="required">*</span>
+                    </label>
+                    <select id="requestType" name="requestType" required>
+                        <option value="">Seleccione una opción</option>
+                        <option value="soporte">🔧 Soporte Técnico</option>
+                        <option value="modificacion">✨ Solicitud de Modificación</option>
+                    </select>
+                </div>
+                
+                <!-- Descripción -->
+                <div class="form-group">
+                    <label for="description">
+                        <i class="bi bi-chat-text"></i> Descripción <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        placeholder="Describa detalladamente su solicitud o problema..."
+                        required
+                    ></textarea>
+                    <p class="hint">Sea lo más específico posible para agilizar la atención</p>
+                </div>
+                
+                <!-- Captura de pantalla -->
+                <div class="form-group">
+                    <label>
+                        <i class="bi bi-image"></i> Captura de Pantalla <span style="color: #6c757d; font-weight: normal;">(opcional)</span>
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            id="screenshot" 
+                            name="screenshot" 
+                            accept="image/*"
+                        >
+                        <div class="file-input-label" id="fileLabel">
+                            <i class="bi bi-cloud-upload"></i>
+                            <span>Haga clic o arrastre una imagen aquí</span>
+                        </div>
+                    </div>
+                    <div class="image-preview" id="imagePreview">
+                        <img id="previewImg" src="" alt="Preview">
+                        <button type="button" class="remove-btn" id="removeImage">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- reCAPTCHA -->
+                <div class="recaptcha-container">
+                    <div class="g-recaptcha" data-sitekey="TU_SITE_KEY_AQUI" id="recaptcha"></div>
+                </div>
+                
+                <!-- Botón enviar -->
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="spinner" id="spinner"></span>
+                    <i class="bi bi-send"></i>
+                    <span id="btnText">Enviar Solicitud</span>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 <span id="footer-name">SchoolNext</span>. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN
+        // ==========================================
+        const SUPABASE_CONFIG = {
+            url: 'https://rqteyrmguczrjiaqxppu.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGV5cm1ndWN6cmppYXF4cHB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MzczNDcsImV4cCI6MjA3OTUxMzM0N30.ApTukbdfmhl2qVFpGJNC-sLeLTocEneRbZK0has0syI'
+        };
+        
+        // ==========================================
+        // ELEMENTOS DEL DOM
+        // ==========================================
+        const form = document.getElementById('supportForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
+        const screenshotInput = document.getElementById('screenshot');
+        const fileLabel = document.getElementById('fileLabel');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const removeImageBtn = document.getElementById('removeImage');
+        
+        // ==========================================
+        // MANEJO DE IMAGEN
+        // ==========================================
+        screenshotInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validar tipo de archivo
+                if (!file.type.startsWith('image/')) {
+                    showMessage('Por favor seleccione un archivo de imagen válido', 'error');
+                    screenshotInput.value = '';
+                    return;
+                }
+                
+                // Validar tamaño (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showMessage('La imagen no debe superar los 5MB', 'error');
+                    screenshotInput.value = '';
+                    return;
+                }
+                
+                // Mostrar preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.classList.add('show');
+                    fileLabel.classList.add('has-file');
+                    fileLabel.innerHTML = '<i class="bi bi-check-circle"></i> <span>' + file.name + '</span>';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        removeImageBtn.addEventListener('click', function() {
+            screenshotInput.value = '';
+            imagePreview.classList.remove('show');
+            fileLabel.classList.remove('has-file');
+            fileLabel.innerHTML = '<i class="bi bi-cloud-upload"></i> <span>Haga clic o arrastre una imagen aquí</span>';
+        });
+        
+        // ==========================================
+        // FUNCIONES AUXILIARES
+        // ==========================================
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = 'message show ' + type;
+            
+            // Scroll al mensaje
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function hideMessage() {
+            messageDiv.classList.remove('show');
+        }
+        
+        function setLoading(loading) {
+            submitBtn.disabled = loading;
+            spinner.style.display = loading ? 'inline-block' : 'none';
+            btnText.textContent = loading ? 'Enviando...' : 'Enviar Solicitud';
+        }
+        
+        // ==========================================
+        // VALIDAR LLAVE DEL CLIENTE
+        // ==========================================
+        async function validateApiKey(apiKey) {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/clients?api_key=eq.${encodeURIComponent(apiKey)}&is_active=eq.true&select=id,name`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Error al validar la llave');
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    return { valid: true, clientId: data[0].id, clientName: data[0].name };
+                }
+                
+                return { valid: false };
+            } catch (error) {
+                console.error('Error validando API key:', error);
+                return { valid: false, error: error.message };
+            }
+        }
+        
+        // ==========================================
+        // SUBIR IMAGEN A STORAGE
+        // ==========================================
+        async function uploadScreenshot(file, clientId) {
+            try {
+                const timestamp = Date.now();
+                const extension = file.name.split('.').pop();
+                const fileName = `client_${clientId}/${timestamp}.${extension}`;
+                
+                const response = await fetch(
+                    `${SUPABASE_CONFIG.url}/storage/v1/object/support/${fileName}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                            'Content-Type': file.type
+                        },
+                        body: file
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Error al subir la imagen');
+                }
+                
+                // Retornar URL pública
+                return `${SUPABASE_CONFIG.url}/storage/v1/object/public/support/${fileName}`;
+            } catch (error) {
+                console.error('Error subiendo imagen:', error);
+                return null;
+            }
+        }
+        
+        // ==========================================
+        // CREAR SOLICITUD DE SOPORTE
+        // ==========================================
+        async function createSupportRequest(clientId, requestType, description, screenshotUrl) {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/support_requests`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.anonKey,
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify({
+                            client_id: clientId,
+                            request_type: requestType,
+                            description: description,
+                            screenshot_url: screenshotUrl
+                        })
+                    }
+                );
+                
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    throw new Error(errorData);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error creando solicitud:', error);
+                throw error;
+            }
+        }
+        
+        // ==========================================
+        // ENVÍO DEL FORMULARIO
+        // ==========================================
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideMessage();
+            
+            // Obtener valores
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const requestType = document.getElementById('requestType').value;
+            const description = document.getElementById('description').value.trim();
+            const screenshotFile = screenshotInput.files[0];
+            
+            // Validaciones básicas
+            if (!apiKey) {
+                showMessage('Por favor ingrese su llave de cliente', 'error');
+                return;
+            }
+            
+            if (!requestType) {
+                showMessage('Por favor seleccione el tipo de solicitud', 'error');
+                return;
+            }
+            
+            if (!description) {
+                showMessage('Por favor ingrese una descripción', 'error');
+                return;
+            }
+            
+            if (description.length < 20) {
+                showMessage('La descripción debe tener al menos 20 caracteres', 'error');
+                return;
+            }
+            
+            // Validar reCAPTCHA
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                showMessage('Por favor complete el reCAPTCHA', 'error');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                // 1. Validar la llave del cliente
+                showMessage('Validando llave de cliente...', 'info');
+                const validation = await validateApiKey(apiKey);
+                
+                if (!validation.valid) {
+                    showMessage('La llave de cliente no es válida o está inactiva', 'error');
+                    setLoading(false);
+                    grecaptcha.reset();
+                    return;
+                }
+                
+                // 2. Subir imagen si existe
+                let screenshotUrl = null;
+                if (screenshotFile) {
+                    showMessage('Subiendo imagen...', 'info');
+                    screenshotUrl = await uploadScreenshot(screenshotFile, validation.clientId);
+                }
+                
+                // 3. Crear la solicitud
+                showMessage('Enviando solicitud...', 'info');
+                const result = await createSupportRequest(
+                    validation.clientId,
+                    requestType,
+                    description,
+                    screenshotUrl
+                );
+                
+                // Éxito
+                showMessage(
+                    `✅ Solicitud enviada exitosamente. Número de ticket: #${result[0].id}. Nos pondremos en contacto pronto.`,
+                    'success'
+                );
+                
+                // Limpiar formulario
+                form.reset();
+                imagePreview.classList.remove('show');
+                fileLabel.classList.remove('has-file');
+                fileLabel.innerHTML = '<i class="bi bi-cloud-upload"></i> <span>Haga clic o arrastre una imagen aquí</span>';
+                grecaptcha.reset();
+                
+            } catch (error) {
+                showMessage('Error al enviar la solicitud. Por favor intente nuevamente.', 'error');
+                console.error('Error:', error);
+                grecaptcha.reset();
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        // ==========================================
+        // CARGAR CONFIGURACIÓN DEL SITIO
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Si existe la función applySiteConfig del config.js, usarla
+            if (typeof applySiteConfig === 'function') {
+                const config = await applySiteConfig();
+                
+                // Actualizar nombre en footer
+                if (config.site_name) {
+                    document.getElementById('footer-name').textContent = config.site_name;
+                }
+                
+                // Actualizar reCAPTCHA site key si está en la config
+                if (config.recaptcha_site_key) {
+                    document.getElementById('recaptcha').setAttribute('data-sitekey', config.recaptcha_site_key);
+                    // Recargar reCAPTCHA con la nueva key
+                    if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+                        try {
+                            grecaptcha.render('recaptcha', {
+                                'sitekey': config.recaptcha_site_key
+                            });
+                        } catch (e) {
+                            // Ya renderizado, ignorar
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
