@@ -2364,14 +2364,57 @@
             window.location.href = '../login.html';
         }
 
-        // ==========================================
-        // MIGRACIONES
-        // ==========================================
-        const CURRENT_SCHEMA_VERSION = 1; // Incrementar con cada nueva migración
+        // ============================================================
+        // FUNCIÓN SHOWTOAST (requerida para migraciones)
+        // ============================================================
+        function showToast(message, type = 'info') {
+            // Remover toast anterior si existe
+            const existingToast = document.querySelector('.toast-notification');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-size: 0.9rem;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 4000);
+        }
         
+        // ============================================================
+        // FUNCIÓN OPENMIGRATIONMODAL
+        // ============================================================
+        function openMigrationModal() {
+            // Por ahora redirigir a ejecutar en todos
+            runAllPendingMigrations();
+        }
+
+        // Versión actual del esquema - INCREMENTAR con cada nueva migración
+        const CURRENT_SCHEMA_VERSION = 1;
+
+        // URLs de los archivos de migración en GitHub (raw)
+        const MIGRATION_FILES = {
+            // 1: 'https://raw.githubusercontent.com/adminschoolnext/schoolnext/main/migrations/001_primera_actualizacion.sql',
+        };
+        
+        // ============================================================
+        // CARGAR ESTADO DE MIGRACIONES
+        // ============================================================
         async function loadMigrationStatus() {
             try {
-                // Cargar clientes
                 const response = await fetch(
                     `${SUPABASE_CONFIG.url}/rest/v1/clients?select=*&order=name.asc`,
                     {
@@ -2382,8 +2425,8 @@
                     }
                 );
                 const clients = await response.json();
+                allClients = clients;
                 
-                // Cargar logs
                 const logsResponse = await fetch(
                     `${SUPABASE_CONFIG.url}/rest/v1/migration_logs?select=*,clients(name)&order=executed_at.desc&limit=50`,
                     {
@@ -2399,13 +2442,16 @@
                 renderMigrationLogs(logs);
                 updateMigrationStats(clients);
             } catch (error) {
-                console.error('Error cargando estado de migraciones:', error);
+                console.error('Error cargando migraciones:', error);
+                showToast('Error cargando migraciones', 'error');
             }
         }
         
         function renderMigrationStatus(clients) {
             const tbody = document.getElementById('table-migraciones');
-            const filter = document.getElementById('filter-migration-status').value;
+            if (!tbody) return;
+            
+            const filter = document.getElementById('filter-migration-status')?.value || '';
             
             let filtered = clients;
             if (filter === 'updated') {
@@ -2417,221 +2463,207 @@
             }
             
             if (filtered.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <i class="bi bi-database"></i>
-                                <p>No hay clientes en esta categoría</p>
-                            </div>
-                        </td>
-                    </tr>`;
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="bi bi-database"></i><p>No hay clientes</p></div></td></tr>';
                 return;
             }
             
             tbody.innerHTML = filtered.map(c => {
                 const hasConfig = c.supabase_url && c.supabase_anon_key;
-                const isUpdated = c.schema_version >= CURRENT_SCHEMA_VERSION;
-                const pendingCount = CURRENT_SCHEMA_VERSION - (c.schema_version || 0);
+                const hasServiceKey = c.supabase_service_key;
+                const currentVersion = c.schema_version || 0;
+                const isUpdated = currentVersion >= CURRENT_SCHEMA_VERSION;
                 
-                let statusBadge;
-                if (!hasConfig) {
-                    statusBadge = '<span class="badge badge-closed">Sin Configurar</span>';
-                } else if (isUpdated) {
-                    statusBadge = '<span class="badge badge-resolved">Actualizado</span>';
-                } else {
-                    statusBadge = `<span class="badge badge-pending">${pendingCount} pendiente(s)</span>`;
-                }
+                let statusBadge = !hasConfig ? '<span class="badge badge-closed">Sin Configurar</span>'
+                    : currentVersion === 0 ? '<span class="badge badge-closed">Sin migración inicial</span>'
+                    : isUpdated ? '<span class="badge badge-resolved">Actualizado</span>'
+                    : `<span class="badge badge-pending">${CURRENT_SCHEMA_VERSION - currentVersion} pendiente(s)</span>`;
                 
-                return `
-                    <tr>
-                        <td><strong>${c.name}</strong></td>
-                        <td>${c.supabase_url ? `<code style="font-size: 0.8rem;">${c.supabase_url.substring(0, 30)}...</code>` : '<em style="color: #6c757d;">No configurado</em>'}</td>
-                        <td><code>v${c.schema_version || 0}</code></td>
-                        <td>${statusBadge}</td>
-                        <td>${c.last_migration_at ? formatDate(c.last_migration_at) : '<em style="color: #6c757d;">Nunca</em>'}</td>
-                        <td>
-                            ${hasConfig ? `
-                                <button class="btn-action" onclick="testConnection(${c.id})" title="Probar conexión">
-                                    <i class="bi bi-plug"></i>
-                                </button>
-                                <button class="btn-action" onclick="runSingleMigration(${c.id})" title="Migrar este cliente">
-                                    <i class="bi bi-play"></i>
-                                </button>
-                            ` : `
-                                <button class="btn-action" onclick="editClient(${c.id})" title="Configurar">
-                                    <i class="bi bi-gear"></i>
-                                </button>
-                            `}
-                        </td>
-                    </tr>
-                `;
+                let serviceKeyIcon = hasServiceKey 
+                    ? '<i class="bi bi-shield-check" style="color:green" title="Service Key OK"></i>' 
+                    : '<i class="bi bi-shield-x" style="color:orange" title="Sin Service Key"></i>';
+                
+                return `<tr>
+                    <td><strong>${c.name}</strong> ${serviceKeyIcon}</td>
+                    <td>${c.supabase_url ? `<code style="font-size:0.75rem">${c.supabase_url.substring(8,35)}...</code>` : '<em>No configurado</em>'}</td>
+                    <td><code>v${currentVersion}</code></td>
+                    <td>${statusBadge}</td>
+                    <td>${c.last_migration_at ? formatDate(c.last_migration_at) : '<em>Nunca</em>'}</td>
+                    <td>
+                        ${hasConfig ? `<button class="btn-action" onclick="testClientConnection(${c.id})" title="Probar"><i class="bi bi-plug"></i></button>` : ''}
+                        ${hasConfig && currentVersion === 0 ? `<button class="btn-action" onclick="showInitialMigrationInstructions(${c.id})" title="Instrucciones" style="background:#e74c3c;color:white"><i class="bi bi-exclamation-triangle"></i></button>` : ''}
+                        ${!hasConfig ? `<button class="btn-action" onclick="editClient(${c.id})" title="Configurar"><i class="bi bi-gear"></i></button>` : ''}
+                    </td>
+                </tr>`;
             }).join('');
         }
         
         function renderMigrationLogs(logs) {
             const tbody = document.getElementById('table-migration-logs');
+            if (!tbody) return;
             
-            if (logs.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <i class="bi bi-clock-history"></i>
-                                <p>No hay historial de migraciones</p>
-                            </div>
-                        </td>
-                    </tr>`;
+            if (!logs || logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="bi bi-clock-history"></i><p>No hay historial</p></div></td></tr>';
                 return;
             }
             
-            tbody.innerHTML = logs.map(log => {
-                const statusBadge = log.status === 'success' 
-                    ? '<span class="badge badge-resolved">Éxito</span>'
-                    : log.status === 'failed'
-                    ? '<span class="badge badge-pending">Error</span>'
-                    : '<span class="badge badge-progress">Saltado</span>';
-                
-                return `
-                    <tr>
-                        <td>${log.clients?.name || 'N/A'}</td>
-                        <td><code>v${log.migration_version}</code></td>
-                        <td>${log.migration_name}</td>
-                        <td>${statusBadge}</td>
-                        <td>${log.execution_time_ms ? `${log.execution_time_ms}ms` : '-'}</td>
-                        <td>${formatDate(log.executed_at)}</td>
-                    </tr>
-                `;
-            }).join('');
+            tbody.innerHTML = logs.map(log => `<tr>
+                <td>${log.clients?.name || 'N/A'}</td>
+                <td><code>v${log.migration_version}</code></td>
+                <td>${log.migration_name || '-'}</td>
+                <td><span class="badge badge-${log.status === 'success' ? 'resolved' : 'pending'}">${log.status === 'success' ? 'Éxito' : 'Error'}</span></td>
+                <td>${log.execution_time_ms ? `${log.execution_time_ms}ms` : '-'}</td>
+                <td>${formatDate(log.executed_at)}</td>
+            </tr>`).join('');
         }
         
         function updateMigrationStats(clients) {
             const configured = clients.filter(c => c.supabase_url);
-            const updated = configured.filter(c => c.schema_version >= CURRENT_SCHEMA_VERSION);
-            const pending = configured.filter(c => c.schema_version < CURRENT_SCHEMA_VERSION);
+            const updated = configured.filter(c => (c.schema_version || 0) >= CURRENT_SCHEMA_VERSION);
+            const pending = configured.filter(c => (c.schema_version || 0) > 0 && (c.schema_version || 0) < CURRENT_SCHEMA_VERSION);
             
             document.getElementById('stat-actualizados').textContent = updated.length;
             document.getElementById('stat-pendientes-mig').textContent = pending.length;
             document.getElementById('stat-version-actual').textContent = CURRENT_SCHEMA_VERSION;
             document.getElementById('stat-total-clientes').textContent = clients.length;
         }
-        
-        function openMigrationModal() {
-            document.getElementById('migration-target').value = 'all';
-            document.getElementById('migration-dry-run').checked = true;
-            document.getElementById('single-client-select').style.display = 'none';
-            document.getElementById('migration-results').style.display = 'none';
-            document.getElementById('migration-output').textContent = '';
+
+        async function testClientConnection(clientId) {
+            const client = allClients.find(c => c.id === clientId);
+            if (!client) return;
             
-            // Poblar select de clientes
-            const select = document.getElementById('migration-client-id');
-            const clientsWithPending = allClients.filter(c => c.supabase_url && c.schema_version < CURRENT_SCHEMA_VERSION);
-            select.innerHTML = clientsWithPending.map(c => 
-                `<option value="${c.id}">${c.name} (v${c.schema_version || 0})</option>`
-            ).join('');
+            showToast(`Probando conexión con ${client.name}...`, 'info');
             
-            openModal('migration');
+            try {
+                const response = await fetch(`${client.supabase_url}/rest/v1/`, {
+                    headers: {
+                        'apikey': client.supabase_anon_key,
+                        'Authorization': `Bearer ${client.supabase_anon_key}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showToast(`✅ Conexión exitosa con ${client.name}`, 'success');
+                } else {
+                    showToast(`❌ Error: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showToast(`❌ Error: ${error.message}`, 'error');
+            }
         }
         
-        document.getElementById('migration-target')?.addEventListener('change', function() {
-            document.getElementById('single-client-select').style.display = 
-                this.value === 'single' ? 'block' : 'none';
-        });
+        function showInitialMigrationInstructions(clientId) {
+            const client = allClients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay show';
+            modal.innerHTML = `
+                <div class="modal" style="max-width:700px">
+                    <div class="modal-header">
+                        <h3><i class="bi bi-exclamation-triangle" style="color:#ffc107"></i> Migración Inicial</h3>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>${client.name}</strong> necesita la migración inicial (v0 → v1)</p>
+                        <p style="margin-top:1rem">Esta migración <strong>debe ejecutarse manualmente</strong> en el SQL Editor de Supabase.</p>
+                        <h4 style="margin-top:1.5rem">Pasos:</h4>
+                        <ol style="margin-left:1.5rem;line-height:2">
+                            <li>Ve al <strong>SQL Editor</strong> de Supabase del cliente</li>
+                            <li>Copia el contenido de <code>migrations/000_initial_setup.sql</code></li>
+                            <li>Pégalo y ejecuta con <strong>Run</strong></li>
+                            <li>Vuelve aquí y marca como completado</li>
+                        </ol>
+                        <div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-top:1rem">
+                            <strong>URL:</strong> <a href="${client.supabase_url}" target="_blank">${client.supabase_url}</a>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cerrar</button>
+                        <button class="btn-primary" onclick="markInitialMigrationComplete(${client.id}); this.closest('.modal-overlay').remove();">
+                            <i class="bi bi-check-lg"></i> Ya ejecuté la migración
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
         
-        async function testConnection(clientId) {
+        async function markInitialMigrationComplete(clientId) {
             const client = allClients.find(c => c.id === clientId);
             if (!client) return;
             
             try {
-                const response = await fetch(
-                    `${client.supabase_url}/rest/v1/`,
-                    {
-                        headers: {
-                            'apikey': client.supabase_anon_key,
-                            'Authorization': `Bearer ${client.supabase_anon_key}`
-                        }
-                    }
-                );
+                // Verificar que existe la función
+                const testResponse = await fetch(`${client.supabase_url}/rest/v1/rpc/execute_migration_sql`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': client.supabase_service_key || client.supabase_anon_key,
+                        'Authorization': `Bearer ${client.supabase_service_key || client.supabase_anon_key}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sql_text: 'SELECT 1' })
+                });
                 
-                if (response.ok) {
-                    alert(`✅ Conexión exitosa con ${client.name}`);
-                } else {
-                    alert(`❌ Error de conexión: ${response.status} ${response.statusText}`);
+                if (!testResponse.ok) {
+                    const errorText = await testResponse.text();
+                    if (errorText.includes('execute_migration_sql') || errorText.includes('does not exist')) {
+                        showToast('❌ La función no existe. Ejecuta la migración 000 primero.', 'error');
+                        return;
+                    }
                 }
+                
+                // Actualizar versión
+                await fetch(`${SUPABASE_CONFIG.url}/rest/v1/clients?id=eq.${clientId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ schema_version: 1, last_migration_at: new Date().toISOString() })
+                });
+                
+                // Registrar log
+                await fetch(`${SUPABASE_CONFIG.url}/rest/v1/migration_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_CONFIG.anonKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        client_id: clientId,
+                        migration_version: 1,
+                        migration_name: '000_initial_setup.sql (manual)',
+                        status: 'success'
+                    })
+                });
+                
+                showToast(`✅ ${client.name} actualizado a v1`, 'success');
+                loadMigrationStatus();
             } catch (error) {
-                alert(`❌ Error de conexión: ${error.message}`);
+                showToast(`❌ Error: ${error.message}`, 'error');
             }
         }
         
-        function runSingleMigration(clientId) {
-            document.getElementById('migration-target').value = 'single';
-            document.getElementById('single-client-select').style.display = 'block';
-            document.getElementById('migration-client-id').value = clientId;
-            openMigrationModal();
-        }
-        
-        async function runMigrations() {
-            const isDryRun = document.getElementById('migration-dry-run').checked;
-            const target = document.getElementById('migration-target').value;
-            const output = document.getElementById('migration-output');
-            const resultsDiv = document.getElementById('migration-results');
+        async function runAllPendingMigrations() {
+            const pendingClients = allClients.filter(c => 
+                c.supabase_url && 
+                c.supabase_service_key && 
+                (c.schema_version || 0) > 0 && 
+                (c.schema_version || 0) < CURRENT_SCHEMA_VERSION
+            );
             
-            resultsDiv.style.display = 'block';
-            output.textContent = isDryRun ? '🔍 MODO SIMULACIÓN\n\n' : '🚀 EJECUTANDO MIGRACIONES\n\n';
-            
-            // Obtener clientes a migrar
-            let clientsToMigrate = [];
-            if (target === 'all') {
-                clientsToMigrate = allClients.filter(c => c.supabase_url && c.schema_version < CURRENT_SCHEMA_VERSION);
-            } else {
-                const clientId = parseInt(document.getElementById('migration-client-id').value);
-                const client = allClients.find(c => c.id === clientId);
-                if (client) clientsToMigrate = [client];
-            }
-            
-            if (clientsToMigrate.length === 0) {
-                output.textContent += '✅ No hay clientes con migraciones pendientes.\n';
+            if (pendingClients.length === 0) {
+                showToast('No hay clientes con migraciones pendientes', 'info');
                 return;
             }
             
-            output.textContent += `📋 Clientes a procesar: ${clientsToMigrate.length}\n\n`;
-            
-            for (const client of clientsToMigrate) {
-                output.textContent += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-                output.textContent += `🏫 ${client.name}\n`;
-                output.textContent += `   Versión actual: v${client.schema_version || 0}\n`;
-                output.textContent += `   Versión objetivo: v${CURRENT_SCHEMA_VERSION}\n`;
-                
-                if (isDryRun) {
-                    output.textContent += `   ⏸️  Simulación: No se ejecutaron cambios\n\n`;
-                } else {
-                    output.textContent += `   ⏳ Ejecutando...\n`;
-                    // Aquí iría la lógica real de migración
-                    output.textContent += `   ✅ Migración completada\n\n`;
-                }
-            }
-            
-            output.textContent += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-            output.textContent += `\n✅ Proceso finalizado\n`;
-            
-            if (!isDryRun) {
-                loadMigrationStatus();
-                loadClients();
-            }
+            showToast(`Hay ${pendingClients.length} cliente(s) con pendientes. Funcionalidad en desarrollo.`, 'info');
         }
         
-        // Agregar evento al filtro
-        document.getElementById('filter-migration-status')?.addEventListener('change', loadMigrationStatus);
-        
-        // Cargar estado al entrar a la sección
-        const originalSwitchSection = switchSection;
-        switchSection = function(section) {
-            originalSwitchSection(section);
-            if (section === 'migraciones') {
-                loadMigrationStatus();
-            }
-        };
-
+        // Event listener para filtro
+        document.getElementById('filter-migration-status')?.addEventListener('change', () => renderMigrationStatus(allClients));
 
         
     </script>
