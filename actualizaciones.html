@@ -3,325 +3,738 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actualizaciones - SchoolNext</title>
-    
-    <!-- Cargar config.js -->
-    <script src="config.js"></script>
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
+    <title>Actualizaciones | SchoolNext</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
     <style>
-        /* Variables CSS para colores dinámicos */
         :root {
-            --primary-color: #1D4E4F;
-            --secondary-color: #2D8B7A;
-            --tertiary-color: #5FB09C;
+            /* Colores corporativos SchoolNext */
+            --primary: #1D4E4F;
+            --secondary: #2D8B7A;
+            --tertiary: #5FB09C;
+            --gradient-main: linear-gradient(135deg, #1D4E4F 0%, #2D8B7A 50%, #5FB09C 100%);
+            --gradient-hero: linear-gradient(160deg, #1D4E4F 0%, #2D8B7A 100%);
+            --gradient-accent: linear-gradient(135deg, #2D8B7A 0%, #5FB09C 100%);
+            
+            /* Complementarios */
+            --dark: #0F2627;
+            --light: #F0F7F6;
+            --surface: #FFFFFF;
+            --surface-alt: #E8F3F1;
+            --text: #2C3E3E;
+            --text-light: #5A6B6B;
+            --text-muted: #8A9A9A;
+            --gold: #D4A853;
+            --gold-light: #F5E6C8;
+            
+            /* Sombras */
+            --shadow-sm: 0 1px 3px rgba(29, 78, 79, 0.08);
+            --shadow-md: 0 4px 12px rgba(29, 78, 79, 0.12);
+            --shadow-lg: 0 8px 30px rgba(29, 78, 79, 0.15);
+            --shadow-xl: 0 20px 50px rgba(29, 78, 79, 0.2);
+            --shadow-glow: 0 0 40px rgba(45, 139, 122, 0.3);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            color: var(--text);
+            line-height: 1.7;
+            background: var(--surface);
+            overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-        
-        /* Hero Discreto */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 1.5rem 2rem;
-            text-align: center;
+
+        h1, h2, h3, h4 {
+            font-family: 'Fraunces', Georgia, serif;
+            color: var(--primary);
+            line-height: 1.2;
+            font-weight: 700;
         }
-        
-        .hero h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .hero p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-        
-        /* Container */
+
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
-            flex: 1;
+            padding: 0 2rem;
         }
-        
-        /* Filtros */
-        .filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        
-        .filter-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .filter-group label {
-            display: block;
-            margin-bottom: 0.4rem;
-            font-weight: 600;
-            color: #495057;
-            font-size: 0.9rem;
-        }
-        
-        .filter-group select,
-        .filter-group input {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-family: inherit;
-        }
-        
-        .filter-group select:focus,
-        .filter-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        /* Update Cards */
-        .updates-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        
-        .update-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--primary-color);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .update-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-        }
-        
-        .update-header {
+
+        /* ===== NAVIGATION ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-md);
         }
-        
-        .update-title {
+
+        .nav-logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            flex-wrap: wrap;
+            text-decoration: none;
         }
-        
-        .update-title h3 {
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            margin: 0;
-        }
-        
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        .badge-module {
-            background: rgba(29, 78, 79, 0.1);
-            color: var(--primary-color);
-        }
-        
-        .badge-version {
-            background: rgba(45, 139, 122, 0.1);
-            color: var(--secondary-color);
-        }
-        
-        .update-date {
-            color: #6c757d;
-            font-size: 0.85rem;
+
+        .nav-logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
         }
-        
-        .update-feature {
-            color: #495057;
+
+        .nav-logo-icon svg {
+            width: 26px;
+            height: 26px;
+            fill: white;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
             font-weight: 500;
-            margin-bottom: 0.75rem;
             font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        
-        .update-detail {
-            color: #6c757d;
-            font-size: 0.9rem;
-            line-height: 1.7;
+
+        .nav-links a:hover {
+            color: var(--secondary);
         }
-        
-        /* Empty state */
-        .empty-state {
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--tertiary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--gradient-accent);
+            color: white !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600 !important;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        .nav-mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .nav-mobile-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            background: var(--gradient-hero);
+            padding: 8rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(95, 176, 156, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(45, 139, 122, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
             text-align: center;
-            padding: 4rem 2rem;
-            color: #6c757d;
         }
-        
-        .empty-state i {
-            font-size: 4rem;
+
+        .page-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: white;
             margin-bottom: 1rem;
-            opacity: 0.4;
         }
-        
-        .empty-state h3 {
+
+        .page-header p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 4rem 0;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .filter-group label {
+            display: block;
             margin-bottom: 0.5rem;
-            color: #495057;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
         }
-        
-        /* Stats summary */
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border: 2px solid var(--surface-alt);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--surface);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(45, 139, 122, 0.1);
+        }
+
+        /* Stats Summary */
         .stats-summary {
             display: flex;
             gap: 2rem;
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
-        
+
         .stat-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #6c757d;
-            font-size: 0.9rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
         }
-        
+
         .stat-item strong {
-            color: var(--primary-color);
+            color: var(--primary);
+            font-weight: 700;
         }
-        
-        /* Footer */
-        footer {
-            background: var(--primary-color);
-            color: white;
-            text-align: center;
+
+        .stat-item svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--secondary);
+        }
+
+        /* Update Cards */
+        .updates-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .update-card {
+            background: var(--surface);
+            border-radius: 16px;
             padding: 2rem;
-            margin-top: auto;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--secondary);
+            transition: all 0.3s ease;
         }
-        
-        footer p {
-            margin: 0.25rem 0;
+
+        .update-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
         }
-        
+
+        .update-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .update-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .update-title h3 {
+            font-size: 1.15rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .badge {
+            padding: 0.3rem 0.85rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-module {
+            background: var(--surface-alt);
+            color: var(--primary);
+        }
+
+        .badge-version {
+            background: rgba(45, 139, 122, 0.15);
+            color: var(--secondary);
+        }
+
+        .update-date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .update-date svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--text-muted);
+        }
+
+        .update-detail {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--text-light);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            fill: var(--surface-alt);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
         /* Load More Button */
         .load-more-container {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
         }
-        
+
         .btn-load-more {
-            background: white;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
+            background: var(--surface);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 0.875rem 2rem;
+            border-radius: 50px;
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            font-family: inherit;
         }
-        
+
         .btn-load-more:hover {
-            background: var(--primary-color);
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-load-more svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--dark);
+            padding: 4rem 0 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand {
+            max-width: 280px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .footer-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
             color: white;
         }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: var(--tertiary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            font-size: 0.85rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        .footer-social svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-mobile-toggle {
+                display: flex;
+            }
+
             .filters {
                 flex-direction: column;
             }
-            
+
             .filter-group {
                 min-width: 100%;
             }
-            
-            .update-header {
-                flex-direction: column;
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
             }
-            
-            .hero h1 {
-                font-size: 1.3rem;
+
+            .footer-brand {
+                max-width: 100%;
+            }
+
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            .update-card {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <section class="hero">
-        <h1><i class="bi bi-megaphone"></i> Actualizaciones del Sistema</h1>
-        <p>Conoce las últimas mejoras y nuevas funcionalidades</p>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 12.18L3.82 10 12 4.72 20.18 10 12 15.18zM5 14.09V18l7 3.82 7-3.82v-3.91l-7 3.82-7-3.82z"/></svg>
+            </div>
+            <span class="nav-logo-text">SchoolNext</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="index.html#modulos">Módulos</a></li>
+            <li><a href="index.html#beneficios">Beneficios</a></li>
+            <li><a href="actualizaciones.html">Actualizaciones</a></li>
+            <li><a href="demo.html" class="nav-cta">Acceso a Demo</a></li>
+        </ul>
+        <div class="nav-mobile-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1>Actualizaciones del Sistema</h1>
+                <p>Conoce las últimas mejoras y nuevas funcionalidades que hemos implementado para ti</p>
+            </div>
+        </div>
     </section>
 
-    <div class="container">
-        <!-- Filtros -->
-        <div class="filters">
-            <div class="filter-group">
-                <label><i class="bi bi-funnel"></i> Filtrar por Módulo</label>
-                <select id="filter-module">
-                    <option value="">Todos los módulos</option>
-                </select>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Filtrar por Módulo</label>
+                    <select id="filter-module">
+                        <option value="">Todos los módulos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Buscar</label>
+                    <input type="text" id="filter-search" placeholder="Buscar en funcionalidad o detalle...">
+                </div>
             </div>
-            <div class="filter-group">
-                <label><i class="bi bi-search"></i> Buscar</label>
-                <input type="text" id="filter-search" placeholder="Buscar en funcionalidad o detalle...">
-            </div>
-        </div>
-        
-        <!-- Stats -->
-        <div class="stats-summary" id="stats-summary">
-            <div class="stat-item">
-                <i class="bi bi-journal-check"></i>
-                <span><strong id="stat-total">0</strong> actualizaciones</span>
-            </div>
-            <div class="stat-item">
-                <i class="bi bi-grid"></i>
-                <span><strong id="stat-modules">0</strong> módulos</span>
-            </div>
-        </div>
-        
-        <!-- Lista de actualizaciones -->
-        <div class="updates-list" id="updates-list">
-            <!-- Se llena dinámicamente -->
-        </div>
-    </div>
 
-    <footer>
-        <p>&copy; 2025 <span id="footer-name">SchoolNext</span>. Todos los derechos reservados.</p>
-        <p>Sistema de Gestión Educativa SaaS</p>
+            <!-- Stats -->
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    <span><strong id="stat-total">0</strong> actualizaciones</span>
+                </div>
+                <div class="stat-item">
+                    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    <span><strong id="stat-modules">0</strong> módulos</span>
+                </div>
+            </div>
+
+            <!-- Updates List -->
+            <div class="updates-list" id="updates-list">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 12.18L3.82 10 12 4.72 20.18 10 12 15.18zM5 14.09V18l7 3.82 7-3.82v-3.91l-7 3.82-7-3.82z"/></svg>
+                        </div>
+                        <span class="footer-logo-text">SchoolNext</span>
+                    </div>
+                    <p>La solución completa para la administración moderna de instituciones educativas. Integración, automatización y datos para la excelencia.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="index.html#modulos">Módulos</a></li>
+                        <li><a href="index.html#beneficios">Beneficios</a></li>
+                        <li><a href="#">Precios</a></li>
+                        <li><a href="actualizaciones.html">Actualizaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Recursos</h4>
+                    <ul>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Webinars</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="#">Sobre Nosotros</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="#">Términos de Uso</a></li>
+                        <li><a href="#">Privacidad</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 SchoolNext. Todos los derechos reservados.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="LinkedIn">
+                        <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Twitter">
+                        <svg viewBox="0 0 24 24"><path d="M22.46 6c-.85.38-1.78.64-2.75.76 1-.6 1.76-1.55 2.12-2.68-.93.55-1.96.95-3.06 1.17-.88-.94-2.13-1.53-3.51-1.53-2.66 0-4.81 2.16-4.81 4.81 0 .38.04.75.13 1.1-4-.2-7.58-2.11-9.96-5.02-.42.72-.66 1.56-.66 2.46 0 1.68.85 3.16 2.14 4.02-.79-.02-1.53-.24-2.18-.6v.06c0 2.35 1.67 4.31 3.88 4.76-.4.1-.83.16-1.27.16-.31 0-.62-.03-.92-.08.63 1.96 2.45 3.39 4.61 3.43-1.69 1.32-3.83 2.1-6.15 2.1-.4 0-.8-.02-1.19-.07 2.19 1.4 4.78 2.22 7.57 2.22 9.07 0 14.02-7.52 14.02-14.02 0-.21 0-.43-.01-.64.96-.69 1.79-1.56 2.45-2.55z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <script>
@@ -343,7 +756,6 @@
         // ==========================================
         async function loadUpdates(append = false) {
             try {
-                // Primero obtener el total
                 if (!append) {
                     const countResponse = await fetch(
                         `${SUPABASE_URL}/rest/v1/updates?is_published=eq.true&select=id`,
@@ -374,7 +786,6 @@
                     displayedUpdates = [...displayedUpdates, ...newUpdates];
                 } else {
                     displayedUpdates = newUpdates;
-                    // Cargar todos para filtros (en segundo plano)
                     loadAllForFilters();
                 }
                 
@@ -422,7 +833,7 @@
                             <span class="badge badge-version">v${u.version}</span>
                         </div>
                         <div class="update-date">
-                            <i class="bi bi-calendar3"></i>
+                            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
                             ${formatDate(u.published_at)}
                         </div>
                     </div>
@@ -431,14 +842,11 @@
             `).join('');
             
             if (append) {
-                // Remover botón de cargar más antes de agregar contenido
                 const loadMoreBtn = container.querySelector('.load-more-container');
                 if (loadMoreBtn) loadMoreBtn.remove();
             }
             
             container.innerHTML = html;
-            
-            // Agregar botón de cargar más si hay más resultados
             appendLoadMoreButton();
         }
         
@@ -459,7 +867,7 @@
                 const loadMoreHtml = `
                     <div class="load-more-container">
                         <button class="btn-load-more" onclick="loadMore()">
-                            <i class="bi bi-arrow-down-circle"></i>
+                            <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
                             Cargar más (${remaining} restantes)
                         </button>
                     </div>
@@ -475,7 +883,7 @@
         function showEmpty(message) {
             document.getElementById('updates-list').innerHTML = `
                 <div class="empty-state">
-                    <i class="bi bi-inbox"></i>
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                     <h3>${message}</h3>
                     <p>Las actualizaciones aparecerán aquí cuando estén disponibles</p>
                 </div>
@@ -499,7 +907,6 @@
             const moduleFilter = document.getElementById('filter-module').value;
             const searchFilter = document.getElementById('filter-search').value.toLowerCase();
             
-            // Si no hay filtros, recargar con paginación normal
             if (!moduleFilter && !searchFilter) {
                 isFiltering = false;
                 displayedUpdates = [];
@@ -522,7 +929,6 @@
                 );
             }
             
-            // Para filtros, necesitamos cargar los datos completos de los resultados
             loadFilteredUpdates(filtered.map(u => u.id));
         }
         
@@ -562,19 +968,8 @@
         // ==========================================
         // INICIALIZACIÓN
         // ==========================================
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Cargar configuración del sitio
-            if (typeof applySiteConfig === 'function') {
-                const config = await applySiteConfig();
-                if (config.site_name) {
-                    document.getElementById('footer-name').textContent = config.site_name;
-                }
-            }
-            
-            // Cargar actualizaciones
+        document.addEventListener('DOMContentLoaded', function() {
             loadUpdates();
-            
-            // Event listeners para filtros
             document.getElementById('filter-module').addEventListener('change', filterUpdates);
             document.getElementById('filter-search').addEventListener('input', filterUpdates);
         });
