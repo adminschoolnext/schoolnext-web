@@ -3,723 +3,1252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo - SchoolNext</title>
-    
-    <!-- Cargar config.js -->
-    <script src="config.js"></script>
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
+    <title>Demo | SchoolNext</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
     <style>
-        /* Variables CSS para colores dinámicos */
         :root {
-            --primary-color: #1D4E4F;
-            --secondary-color: #2D8B7A;
-            --tertiary-color: #5FB09C;
+            /* Colores corporativos SchoolNext */
+            --primary: #1D4E4F;
+            --secondary: #2D8B7A;
+            --tertiary: #5FB09C;
+            --gradient-main: linear-gradient(135deg, #1D4E4F 0%, #2D8B7A 50%, #5FB09C 100%);
+            --gradient-hero: linear-gradient(160deg, #1D4E4F 0%, #2D8B7A 100%);
+            --gradient-accent: linear-gradient(135deg, #2D8B7A 0%, #5FB09C 100%);
+            
+            /* Complementarios */
+            --dark: #0F2627;
+            --light: #F0F7F6;
+            --surface: #FFFFFF;
+            --surface-alt: #E8F3F1;
+            --text: #2C3E3E;
+            --text-light: #5A6B6B;
+            --text-muted: #8A9A9A;
+            --gold: #D4A853;
+            --gold-light: #F5E6C8;
+            --success: #28a745;
+            --success-light: #d4edda;
+            
+            /* Sombras */
+            --shadow-sm: 0 1px 3px rgba(29, 78, 79, 0.08);
+            --shadow-md: 0 4px 12px rgba(29, 78, 79, 0.12);
+            --shadow-lg: 0 8px 30px rgba(29, 78, 79, 0.15);
+            --shadow-xl: 0 20px 50px rgba(29, 78, 79, 0.2);
+            --shadow-glow: 0 0 40px rgba(45, 139, 122, 0.3);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            color: var(--text);
+            line-height: 1.7;
+            background: var(--light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        
-        
-        /* Hero Discreto */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 1.5rem 2rem;
-            text-align: center;
+
+        h1, h2, h3, h4 {
+            font-family: 'Fraunces', Georgia, serif;
+            color: var(--primary);
+            line-height: 1.2;
+            font-weight: 700;
         }
-        
-        .hero h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .hero p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-        
-        /* Container */
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
         }
-        
-        /* Recommendation Box */
-        .recommendation-box {
-            background: rgba(95, 176, 156, 0.15);
-            border-left: 4px solid var(--secondary-color);
-            padding: 2rem;
-            margin: 3rem auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        /* ===== NAVIGATION ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-md);
         }
-        
-        .recommendation-box h3 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-logo-icon svg {
+            width: 26px;
+            height: 26px;
+            fill: white;
+        }
+
+        .nav-logo-text {
+            font-family: 'Fraunces', serif;
             font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
         }
-        
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--tertiary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--gradient-accent);
+            color: white !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600 !important;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        .nav-mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .nav-mobile-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            background: var(--gradient-hero);
+            padding: 8rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(95, 176, 156, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(45, 139, 122, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 4rem 0;
+        }
+
+        /* ===== RECOMMENDATION BOX ===== */
+        .recommendation-box {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg);
+            border-left: 5px solid var(--success);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recommendation-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(40, 167, 69, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .recommendation-box h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        .recommendation-box h3 svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--success);
+        }
+
         .recommendation-box ol {
             margin-left: 1.5rem;
-            color: #495057;
+            color: var(--text-light);
+            margin-bottom: 1rem;
         }
-        
+
         .recommendation-box li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
         }
-        
-        .recommendation-box p {
-            color: #495057;
-            margin-top: 1rem;
+
+        .recommendation-box li strong {
+            color: var(--primary);
+        }
+
+        .recommendation-box > p {
+            color: var(--text-muted);
             font-style: italic;
+            margin: 0;
+            padding-top: 1rem;
+            border-top: 1px solid var(--surface-alt);
         }
-        
-        /* Instructions */
+
+        /* ===== INSTRUCTIONS ===== */
         .instructions {
             text-align: center;
-            margin: 3rem auto;
-            padding: 2rem;
+            margin-bottom: 4rem;
         }
-        
-        .instructions h3 {
-            color: var(--primary-color);
+
+        .instructions h2 {
             font-size: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
-        
+
         .steps {
             display: flex;
             justify-content: center;
             gap: 2rem;
             flex-wrap: wrap;
         }
-        
+
         .step {
             flex: 1;
-            min-width: 200px;
+            min-width: 220px;
             max-width: 300px;
             text-align: center;
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
         }
-        
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
         .step-number {
-            background: var(--primary-color);
+            background: var(--gradient-accent);
             color: white;
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            font-weight: bold;
-            margin: 0 auto 1rem;
+            font-weight: 700;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 4px 15px rgba(45, 139, 122, 0.3);
         }
-        
+
         .step h4 {
-            color: var(--primary-color);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem;
             margin-bottom: 0.5rem;
         }
-        
-        /* User Cards */
-        .users-section {
-            margin: 3rem auto;
+
+        .step p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin: 0;
         }
-        
-        .users-section h3 {
+
+        /* ===== USERS SECTION ===== */
+        .users-section h2 {
             text-align: center;
-            color: var(--primary-color);
             font-size: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
-        
+
         .users-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
             gap: 2rem;
             margin-bottom: 3rem;
         }
-        
+
         .user-card {
-            background: white;
-            border-radius: 10px;
+            background: var(--surface);
+            border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--secondary);
+            position: relative;
         }
-        
+
         .user-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-lg);
         }
-        
+
         .user-card.recommended {
-            border-top-color: #28a745;
-            background: #f8fff9;
+            border-top-color: var(--success);
+            background: linear-gradient(180deg, var(--success-light) 0%, var(--surface) 30%);
         }
-        
-        .user-card.recommended .card-badge {
-            background: #28a745;
+
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--success);
             color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: inline-block;
-            margin-bottom: 1rem;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
         }
-        
+
+        .card-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: white;
+        }
+
         .user-header {
             display: flex;
             align-items: center;
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .user-icon {
             font-size: 3rem;
+            line-height: 1;
         }
-        
+
         .user-title h4 {
-            color: var(--primary-color);
-            font-size: 1.3rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.25rem;
             margin-bottom: 0.25rem;
         }
-        
+
         .user-subtitle {
-            color: #6c757d;
+            color: var(--text-muted);
             font-size: 0.9rem;
         }
-        
+
         .credentials {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            background: var(--light);
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.25rem;
         }
-        
+
         .credential-row {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
         }
-        
+
         .credential-row:last-child {
             margin-bottom: 0;
         }
-        
+
+        .credential-row svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--secondary);
+        }
+
         .credential-label {
             font-weight: 600;
             min-width: 100px;
+            color: var(--text);
         }
-        
+
         .credential-value {
             font-family: 'Courier New', monospace;
-            background: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
+            background: var(--surface);
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
             flex: 1;
+            color: var(--primary);
+            font-weight: 500;
         }
-        
+
         .permissions {
             margin-bottom: 1.5rem;
         }
-        
+
         .permissions h5 {
-            color: #495057;
-            font-size: 1rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-weight: 600;
             margin-bottom: 0.75rem;
         }
-        
+
         .permission-list {
             list-style: none;
-            padding-left: 0;
         }
-        
+
         .permission-list li {
-            padding: 0.25rem 0;
-            color: #6c757d;
+            padding: 0.35rem 0;
+            color: var(--text-light);
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        .permission-list li i {
-            color: #28a745;
-            margin-right: 0.5rem;
+
+        .permission-list li svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--success);
+            flex-shrink: 0;
         }
-        
+
         .btn-login {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
             width: 100%;
-            background: var(--primary-color);
+            background: var(--gradient-accent);
             color: white;
-            padding: 0.75rem;
+            padding: 1rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            text-align: center;
             text-decoration: none;
-            transition: background 0.3s, transform 0.2s;
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
-        
+
         .btn-login:hover {
-            background: var(--secondary-color);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
         }
-        
-        /* Info Box */
-        .info-box {
-            background: rgba(45, 139, 122, 0.1);
-            border-left: 4px solid var(--primary-color);
-            padding: 2rem;
-            margin: 3rem auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        .btn-login svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
         }
-        
-        .info-box h3 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .info-box p {
-            color: #495057;
-            margin: 0;
-        }
-        
-        /* Modules Section */
+
+        /* ===== MODULES SECTION ===== */
         .modules-section {
-            margin: 3rem auto;
-            padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 10px;
+            margin: 4rem 0;
+            padding: 3rem;
+            background: var(--surface);
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
         }
-        
-        .modules-section h3 {
+
+        .modules-section h2 {
             text-align: center;
-            color: var(--primary-color);
             font-size: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
-        
+
         .modules-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 1.5rem;
         }
-        
+
         .module-item {
-            background: white;
+            background: var(--light);
             padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             gap: 1rem;
+            transition: all 0.3s ease;
         }
-        
+
+        .module-item:hover {
+            background: var(--surface-alt);
+            transform: translateX(5px);
+        }
+
         .module-icon {
-            font-size: 2rem;
+            font-size: 2.25rem;
+            line-height: 1;
         }
-        
+
         .module-info h4 {
-            color: var(--primary-color);
-            font-size: 1.1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.05rem;
             margin-bottom: 0.25rem;
         }
-        
+
         .module-info p {
-            color: #6c757d;
-            font-size: 0.9rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
             margin: 0;
         }
-        
-        /* Footer */
-        footer {
-            background: var(--primary-color);
-            color: white;
-            text-align: center;
+
+        /* ===== INFO BOX ===== */
+        .info-box {
+            background: var(--surface);
+            border-radius: 16px;
             padding: 2rem;
-            margin-top: 4rem;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
         }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            
-            .hero h1 {
-                font-size: 1.3rem;
+
+        .info-box svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--secondary);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-box-content h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box-content p {
+            color: var(--text-light);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--dark);
+            padding: 4rem 0 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand {
+            max-width: 280px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .footer-logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: var(--tertiary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            font-size: 0.85rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        .footer-social svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-mobile-toggle {
+                display: flex;
+            }
+
             .steps {
                 flex-direction: column;
+                align-items: center;
             }
-            
+
+            .step {
+                max-width: 100%;
+            }
+
             .users-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-brand {
+                max-width: 100%;
+            }
+
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            .recommendation-box {
+                padding: 1.5rem;
+            }
+
+            .user-card {
+                padding: 1.5rem;
+            }
+
+            .modules-section {
+                padding: 2rem 1.5rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <section class="hero">
-        <h1><i class="bi bi-play-circle"></i> Explora SchoolNext</h1>
-        <p>Prueba todas las funcionalidades con usuarios de demostración</p>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 12.18L3.82 10 12 4.72 20.18 10 12 15.18zM5 14.09V18l7 3.82 7-3.82v-3.91l-7 3.82-7-3.82z"/></svg>
+            </div>
+            <span class="nav-logo-text">SchoolNext</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="index.html#modulos">Módulos</a></li>
+            <li><a href="index.html#beneficios">Beneficios</a></li>
+            <li><a href="actualizaciones.html">Actualizaciones</a></li>
+            <li><a href="demo.html" class="nav-cta">Acceso a Demo</a></li>
+        </ul>
+        <div class="nav-mobile-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1>Explora SchoolNext</h1>
+                <p>Prueba todas las funcionalidades con usuarios de demostración configurados para ti</p>
+            </div>
+        </div>
     </section>
 
-    <div class="container">
-        <!-- Caja de Recomendación -->
-        <div class="recommendation-box">
-            <h3><i class="bi bi-book"></i> Recomendación: Comienza explorando los manuales</h3>
-            <p>Para aprovechar al máximo tu experiencia de demostración, te sugerimos:</p>
-            <ol>
-                <li><strong>Ingresa primero como Super Administrador</strong> (credenciales abajo)</li>
-                <li><strong>En cada página del sistema, haz clic en el ícono 📖</strong> que aparece en la barra superior</li>
-                <li><strong>Lee los manuales</strong> para comprender qué hace cada funcionalidad y cómo usarla</li>
-                <li><strong>Después, experimenta con diferentes roles</strong> para ver cómo funcionan los permisos específicos</li>
-            </ol>
-            <p>Esta ruta te dará una visión completa del sistema antes de explorar perspectivas específicas por rol.</p>
-        </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
 
-        <!-- Instrucciones -->
-        <div class="instructions">
-            <h3>Cómo funciona la demo</h3>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h4>Elige un perfil</h4>
-                    <p>Selecciona el usuario que quieres probar</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h4>Copia las credenciales</h4>
-                    <p>Usa el usuario y contraseña proporcionados</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h4>Ingresa y explora</h4>
-                    <p>Prueba todas las funcionalidades disponibles</p>
-                </div>
+            <!-- Recommendation Box -->
+            <div class="recommendation-box">
+                <h3>
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    Recomendación: Comienza explorando los manuales
+                </h3>
+                <p style="color: var(--text-light); margin-bottom: 1rem; font-style: normal;">Para aprovechar al máximo tu experiencia de demostración, te sugerimos:</p>
+                <ol>
+                    <li><strong>Ingresa primero como Super Administrador</strong> (credenciales abajo)</li>
+                    <li><strong>En cada página del sistema, haz clic en el ícono 📖</strong> que aparece en la barra superior</li>
+                    <li><strong>Lee los manuales</strong> para comprender qué hace cada funcionalidad y cómo usarla</li>
+                    <li><strong>Después, experimenta con diferentes roles</strong> para ver cómo funcionan los permisos específicos</li>
+                </ol>
+                <p>Esta ruta te dará una visión completa del sistema antes de explorar perspectivas específicas por rol.</p>
             </div>
-        </div>
 
-        <!-- Usuarios de Demostración -->
-        <div class="users-section">
-            <h3>Usuarios de Demostración</h3>
-            <div class="users-grid">
-                
-                <!-- Super Administrador -->
-                <div class="user-card recommended">
-                    <div class="card-badge"><i class="bi bi-star-fill"></i> RECOMENDADO PARA EMPEZAR</div>
-                    <div class="user-header">
-                        <div class="user-icon">👑</div>
-                        <div class="user-title">
-                            <h4>Super Administrador</h4>
-                            <p class="user-subtitle">Administrador del sistema</p>
-                        </div>
+            <!-- Instructions -->
+            <div class="instructions">
+                <h2>Cómo funciona la demo</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Elige un perfil</h4>
+                        <p>Selecciona el usuario que quieres probar según el rol</p>
                     </div>
-                    <div class="credentials">
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
-                            <span class="credential-value">admin</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
-                            <span class="credential-value">Clave99*</span>
-                        </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>Copia las credenciales</h4>
+                        <p>Usa el usuario y contraseña proporcionados</p>
                     </div>
-                    <div class="permissions">
-                        <h5>Permisos:</h5>
-                        <ul class="permission-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Acceso total al sistema</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Sin restricciones</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Todos los módulos disponibles</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de usuarios y roles</li>
-                        </ul>
-                    </div>
-                    <a href="https://schoolnext.co/login.html" class="btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingresar como Admin
-                    </a>
-                </div>
-
-                <!-- Gestor de Calidad -->
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="user-icon">🔧</div>
-                        <div class="user-title">
-                            <h4>Gestor de Calidad</h4>
-                            <p class="user-subtitle">María Montessori</p>
-                        </div>
-                    </div>
-                    <div class="credentials">
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
-                            <span class="credential-value">mmontessori</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
-                            <span class="credential-value">Clave01@</span>
-                        </div>
-                    </div>
-                    <div class="permissions">
-                        <h5>Permisos principales:</h5>
-                        <ul class="permission-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de indicadores</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Análisis de mejora continua</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de indicadores</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de encuestas</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de PQR</li>
-                        </ul>
-                    </div>
-                    <a href="https://schoolnext.co/login.html" class="btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
-                    </a>
-                </div>
-
-                <!-- Gestor de Seguridad -->
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="user-icon">🔒</div>
-                        <div class="user-title">
-                            <h4>Gestor de Seguridad</h4>
-                            <p class="user-subtitle">Edwards Deming</p>
-                        </div>
-                    </div>
-                    <div class="credentials">
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
-                            <span class="credential-value">edeming</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
-                            <span class="credential-value">Clave01@</span>
-                        </div>
-                    </div>
-                    <div class="permissions">
-                        <h5>Permisos principales:</h5>
-                        <ul class="permission-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de usuarios</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de roles</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Configuración de permisos</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Logs de auditoría</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Asignación de roles</li>
-                        </ul>
-                    </div>
-                    <a href="https://schoolnext.co/login.html" class="btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
-                    </a>
-                </div>
-
-                <!-- Gestor de Formación -->
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="user-icon">📚</div>
-                        <div class="user-title">
-                            <h4>Gestor de Formación</h4>
-                            <p class="user-subtitle">Obi-Wan Kenobi</p>
-                        </div>
-                    </div>
-                    <div class="credentials">
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
-                            <span class="credential-value">okenobi</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
-                            <span class="credential-value">Clave01@</span>
-                        </div>
-                    </div>
-                    <div class="permissions">
-                        <h5>Permisos principales:</h5>
-                        <ul class="permission-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de unidades formativas</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de facilitadores</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Generación de rutas formativas</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de formación</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Reportes de formación</li>
-                        </ul>
-                    </div>
-                    <a href="https://schoolnext.co/login.html" class="btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
-                    </a>
-                </div>
-
-                <!-- Coordinador -->
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="user-icon">👥</div>
-                        <div class="user-title">
-                            <h4>Coordinador</h4>
-                            <p class="user-subtitle">Diana Prince</p>
-                        </div>
-                    </div>
-                    <div class="credentials">
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
-                            <span class="credential-value">dprince</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
-                            <span class="credential-value">Clave01@</span>
-                        </div>
-                    </div>
-                    <div class="permissions">
-                        <h5>Permisos principales:</h5>
-                        <ul class="permission-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de indicadores</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de mejora</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de procedimientos</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Consulta de rutas formativas</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Dashboard de tareas</li>
-                        </ul>
-                    </div>
-                    <a href="https://schoolnext.co/login.html" class="btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
-                    </a>
-                </div>
-
-                <!-- Usuario Base -->
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="user-icon">👤</div>
-                        <div class="user-title">
-                            <h4>Usuario Base</h4>
-                            <p class="user-subtitle">Forrest Gump</p>
-                        </div>
-                    </div>
-                    <div class="credentials">
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-person-fill"></i> Usuario:</span>
-                            <span class="credential-value">fgump</span>
-                        </div>
-                        <div class="credential-row">
-                            <span class="credential-label"><i class="bi bi-key-fill"></i> Contraseña:</span>
-                            <span class="credential-value">Clave01@</span>
-                        </div>
-                    </div>
-                    <div class="permissions">
-                        <h5>Permisos principales:</h5>
-                        <ul class="permission-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Ver mi dashboard de formación</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Ver mi ruta formativa</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Solicitar unidades por interés</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Captura de datos</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Gestión de tareas</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Mis solicitudes de procedimientos</li>
-                        </ul>
-                    </div>
-                    <a href="https://schoolnext.co/login.html" class="btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
-                    </a>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Módulos Disponibles -->
-        <div class="modules-section">
-            <h3>Módulos Disponibles en SchoolNext</h3>
-            <div class="modules-grid">
-                <div class="module-item">
-                    <div class="module-icon">📊</div>
-                    <div class="module-info">
-                        <h4>Indicadores</h4>
-                        <p>Gestión de variables y análisis de datos</p>
-                    </div>
-                </div>
-                <div class="module-item">
-                    <div class="module-icon">📋</div>
-                    <div class="module-info">
-                        <h4>Encuestas</h4>
-                        <p>Creación y análisis de encuestas</p>
-                    </div>
-                </div>
-                <div class="module-item">
-                    <div class="module-icon">💬</div>
-                    <div class="module-info">
-                        <h4>PQR</h4>
-                        <p>Gestión de solicitudes y peticiones</p>
-                    </div>
-                </div>
-                <div class="module-item">
-                    <div class="module-icon">🎓</div>
-                    <div class="module-info">
-                        <h4>Formación</h4>
-                        <p>Rutas formativas y capacitación</p>
-                    </div>
-                </div>
-                <div class="module-item">
-                    <div class="module-icon">✅</div>
-                    <div class="module-info">
-                        <h4>Gestión de Tareas</h4>
-                        <p>Organización y seguimiento de tareas</p>
-                    </div>
-                </div>
-                <div class="module-item">
-                    <div class="module-icon">🔄</div>
-                    <div class="module-info">
-                        <h4>Procedimientos</h4>
-                        <p>Gestión de procesos institucionales</p>
-                    </div>
-                </div>
-                <div class="module-item">
-                    <div class="module-icon">🔧</div>
-                    <div class="module-info">
-                        <h4>Configuración</h4>
-                        <p>Personalización del sistema</p>
-                    </div>
-                </div>
-                <div class="module-item">
-                    <div class="module-icon">🔒</div>
-                    <div class="module-info">
-                        <h4>Seguridad</h4>
-                        <p>Usuarios, roles y permisos</p>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Ingresa y explora</h4>
+                        <p>Prueba todas las funcionalidades disponibles</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Users Section -->
+            <section class="users-section">
+                <h2>Usuarios de Demostración</h2>
+                <div class="users-grid">
+
+                    <!-- Super Administrador -->
+                    <div class="user-card recommended">
+                        <div class="card-badge">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            RECOMENDADO PARA EMPEZAR
+                        </div>
+                        <div class="user-header">
+                            <div class="user-icon">👑</div>
+                            <div class="user-title">
+                                <h4>Super Administrador</h4>
+                                <p class="user-subtitle">Administrador del sistema</p>
+                            </div>
+                        </div>
+                        <div class="credentials">
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <span class="credential-label">Usuario:</span>
+                                <span class="credential-value">admin</span>
+                            </div>
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                <span class="credential-label">Contraseña:</span>
+                                <span class="credential-value">Clave99*</span>
+                            </div>
+                        </div>
+                        <div class="permissions">
+                            <h5>Permisos:</h5>
+                            <ul class="permission-list">
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Acceso total al sistema</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Sin restricciones</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Todos los módulos disponibles</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de usuarios y roles</li>
+                            </ul>
+                        </div>
+                        <a href="https://schoolnext.co/login.html" class="btn-login">
+                            <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                            Ingresar como Admin
+                        </a>
+                    </div>
+
+                    <!-- Gestor de Calidad -->
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-icon">🔧</div>
+                            <div class="user-title">
+                                <h4>Gestor de Calidad</h4>
+                                <p class="user-subtitle">María Montessori</p>
+                            </div>
+                        </div>
+                        <div class="credentials">
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <span class="credential-label">Usuario:</span>
+                                <span class="credential-value">mmontessori</span>
+                            </div>
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                <span class="credential-label">Contraseña:</span>
+                                <span class="credential-value">Clave01@</span>
+                            </div>
+                        </div>
+                        <div class="permissions">
+                            <h5>Permisos principales:</h5>
+                            <ul class="permission-list">
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de indicadores</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Análisis de mejora continua</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Dashboard de indicadores</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de encuestas</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de PQR</li>
+                            </ul>
+                        </div>
+                        <a href="https://schoolnext.co/login.html" class="btn-login">
+                            <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                            Ingresar
+                        </a>
+                    </div>
+
+                    <!-- Gestor de Seguridad -->
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-icon">🔒</div>
+                            <div class="user-title">
+                                <h4>Gestor de Seguridad</h4>
+                                <p class="user-subtitle">Edwards Deming</p>
+                            </div>
+                        </div>
+                        <div class="credentials">
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <span class="credential-label">Usuario:</span>
+                                <span class="credential-value">edeming</span>
+                            </div>
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                <span class="credential-label">Contraseña:</span>
+                                <span class="credential-value">Clave01@</span>
+                            </div>
+                        </div>
+                        <div class="permissions">
+                            <h5>Permisos principales:</h5>
+                            <ul class="permission-list">
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de usuarios</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de roles</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Configuración de permisos</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Logs de auditoría</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Asignación de roles</li>
+                            </ul>
+                        </div>
+                        <a href="https://schoolnext.co/login.html" class="btn-login">
+                            <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                            Ingresar
+                        </a>
+                    </div>
+
+                    <!-- Gestor de Formación -->
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-icon">📚</div>
+                            <div class="user-title">
+                                <h4>Gestor de Formación</h4>
+                                <p class="user-subtitle">Obi-Wan Kenobi</p>
+                            </div>
+                        </div>
+                        <div class="credentials">
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <span class="credential-label">Usuario:</span>
+                                <span class="credential-value">okenobi</span>
+                            </div>
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                <span class="credential-label">Contraseña:</span>
+                                <span class="credential-value">Clave01@</span>
+                            </div>
+                        </div>
+                        <div class="permissions">
+                            <h5>Permisos principales:</h5>
+                            <ul class="permission-list">
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de unidades formativas</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de facilitadores</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Generación de rutas formativas</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Dashboard de formación</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Reportes de formación</li>
+                            </ul>
+                        </div>
+                        <a href="https://schoolnext.co/login.html" class="btn-login">
+                            <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                            Ingresar
+                        </a>
+                    </div>
+
+                    <!-- Coordinador -->
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-icon">👥</div>
+                            <div class="user-title">
+                                <h4>Coordinador</h4>
+                                <p class="user-subtitle">Diana Prince</p>
+                            </div>
+                        </div>
+                        <div class="credentials">
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <span class="credential-label">Usuario:</span>
+                                <span class="credential-value">dprince</span>
+                            </div>
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                <span class="credential-label">Contraseña:</span>
+                                <span class="credential-value">Clave01@</span>
+                            </div>
+                        </div>
+                        <div class="permissions">
+                            <h5>Permisos principales:</h5>
+                            <ul class="permission-list">
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Dashboard de indicadores</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de mejora</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Dashboard de procedimientos</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Consulta de rutas formativas</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Dashboard de tareas</li>
+                            </ul>
+                        </div>
+                        <a href="https://schoolnext.co/login.html" class="btn-login">
+                            <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                            Ingresar
+                        </a>
+                    </div>
+
+                    <!-- Usuario Base -->
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div class="user-icon">👤</div>
+                            <div class="user-title">
+                                <h4>Usuario Base</h4>
+                                <p class="user-subtitle">Forrest Gump</p>
+                            </div>
+                        </div>
+                        <div class="credentials">
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <span class="credential-label">Usuario:</span>
+                                <span class="credential-value">fgump</span>
+                            </div>
+                            <div class="credential-row">
+                                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                <span class="credential-label">Contraseña:</span>
+                                <span class="credential-value">Clave01@</span>
+                            </div>
+                        </div>
+                        <div class="permissions">
+                            <h5>Permisos principales:</h5>
+                            <ul class="permission-list">
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Ver mi dashboard de formación</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Ver mi ruta formativa</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Solicitar unidades por interés</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Captura de datos</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gestión de tareas</li>
+                                <li><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Mis solicitudes de procedimientos</li>
+                            </ul>
+                        </div>
+                        <a href="https://schoolnext.co/login.html" class="btn-login">
+                            <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                            Ingresar
+                        </a>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Modules Section -->
+            <section class="modules-section">
+                <h2>Módulos Disponibles en SchoolNext</h2>
+                <div class="modules-grid">
+                    <div class="module-item">
+                        <div class="module-icon">📊</div>
+                        <div class="module-info">
+                            <h4>Indicadores</h4>
+                            <p>Gestión de variables y análisis de datos</p>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-icon">📋</div>
+                        <div class="module-info">
+                            <h4>Encuestas</h4>
+                            <p>Creación y análisis de encuestas</p>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-icon">💬</div>
+                        <div class="module-info">
+                            <h4>PQR</h4>
+                            <p>Gestión de solicitudes y peticiones</p>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-icon">🎓</div>
+                        <div class="module-info">
+                            <h4>Formación</h4>
+                            <p>Rutas formativas y capacitación</p>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-icon">✅</div>
+                        <div class="module-info">
+                            <h4>Gestión de Tareas</h4>
+                            <p>Organización y seguimiento de tareas</p>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-icon">🔄</div>
+                        <div class="module-info">
+                            <h4>Procedimientos</h4>
+                            <p>Gestión de procesos institucionales</p>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-icon">🔧</div>
+                        <div class="module-info">
+                            <h4>Configuración</h4>
+                            <p>Personalización del sistema</p>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <div class="module-icon">🔒</div>
+                        <div class="module-info">
+                            <h4>Seguridad</h4>
+                            <p>Usuarios, roles y permisos</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                <div class="info-box-content">
+                    <h3>Datos de demostración</h3>
+                    <p>La base de datos de prueba se reinicia automáticamente cada 24 horas con la información inicial. Todos los cambios que realices durante tu exploración serán temporales y no afectarán a otros usuarios.</p>
+                </div>
+            </div>
+
         </div>
+    </main>
 
-        <!-- Caja de Información -->
-        <div class="info-box">
-            <h3><i class="bi bi-info-circle-fill"></i> Datos de demostración</h3>
-            <p>La base de datos de prueba se reinicia automáticamente cada 24 horas con la información inicial. Todos los cambios que realices durante tu exploración serán temporales y no afectarán a otros usuarios.</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 12.18L3.82 10 12 4.72 20.18 10 12 15.18zM5 14.09V18l7 3.82 7-3.82v-3.91l-7 3.82-7-3.82z"/></svg>
+                        </div>
+                        <span class="footer-logo-text">SchoolNext</span>
+                    </div>
+                    <p>La solución completa para la administración moderna de instituciones educativas. Integración, automatización y datos para la excelencia.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="index.html#modulos">Módulos</a></li>
+                        <li><a href="index.html#beneficios">Beneficios</a></li>
+                        <li><a href="#">Precios</a></li>
+                        <li><a href="actualizaciones.html">Actualizaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Recursos</h4>
+                    <ul>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Webinars</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="#">Sobre Nosotros</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="#">Términos de Uso</a></li>
+                        <li><a href="#">Privacidad</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 SchoolNext. Todos los derechos reservados.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="LinkedIn">
+                        <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Twitter">
+                        <svg viewBox="0 0 24 24"><path d="M22.46 6c-.85.38-1.78.64-2.75.76 1-.6 1.76-1.55 2.12-2.68-.93.55-1.96.95-3.06 1.17-.88-.94-2.13-1.53-3.51-1.53-2.66 0-4.81 2.16-4.81 4.81 0 .38.04.75.13 1.1-4-.2-7.58-2.11-9.96-5.02-.42.72-.66 1.56-.66 2.46 0 1.68.85 3.16 2.14 4.02-.79-.02-1.53-.24-2.18-.6v.06c0 2.35 1.67 4.31 3.88 4.76-.4.1-.83.16-1.27.16-.31 0-.62-.03-.92-.08.63 1.96 2.45 3.39 4.61 3.43-1.69 1.32-3.83 2.1-6.15 2.1-.4 0-.8-.02-1.19-.07 2.19 1.4 4.78 2.22 7.57 2.22 9.07 0 14.02-7.52 14.02-14.02 0-.21 0-.43-.01-.64.96-.69 1.79-1.56 2.45-2.55z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+                    </a>
+                </div>
+            </div>
         </div>
-
-    </div>
-
-    <footer>
-        <p>&copy; 2025 <span id="footer-name">SchoolNext</span>. Todos los derechos reservados.</p>
-        <p>Sistema de Gestión Educativa SaaS</p>
     </footer>
 
-    <script>
-        // Cargar configuración del sitio
-        document.addEventListener('DOMContentLoaded', async function() {
-            if (typeof applySiteConfig === 'function') {
-                const config = await applySiteConfig();
-                
-                if (config.site_name) {
-                    document.getElementById('footer-name').textContent = config.site_name;
-                }
-            }
-        });
-    </script>
-    
 </body>
 </html>
