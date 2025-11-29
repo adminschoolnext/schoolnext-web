@@ -2454,17 +2454,21 @@
         
         function renderMigrationStatus(clients) {
             const tbody = document.getElementById('table-migraciones');
-            if (!tbody) return;
+            if (!tbody) {
+                console.log('No se encontró tbody');
+                return;
+            }
             
             const filter = document.getElementById('filter-migration-status')?.value || '';
             
-            let filtered = clients;
+            let filtered = clients || [];
+            
             if (filter === 'updated') {
-                filtered = clients.filter(c => c.supabase_url && c.schema_version >= CURRENT_SCHEMA_VERSION);
+                filtered = filtered.filter(c => c.supabase_url && (c.schema_version || 0) >= CURRENT_SCHEMA_VERSION);
             } else if (filter === 'pending') {
-                filtered = clients.filter(c => c.supabase_url && c.schema_version < CURRENT_SCHEMA_VERSION);
+                filtered = filtered.filter(c => c.supabase_url && (c.schema_version || 0) < CURRENT_SCHEMA_VERSION);
             } else if (filter === 'no-config') {
-                filtered = clients.filter(c => !c.supabase_url);
+                filtered = filtered.filter(c => !c.supabase_url);
             }
             
             if (filtered.length === 0) {
@@ -2478,26 +2482,45 @@
                 const currentVersion = c.schema_version || 0;
                 const isUpdated = currentVersion >= CURRENT_SCHEMA_VERSION;
                 
-                let statusBadge = !hasConfig ? '<span class="badge badge-closed">Sin Configurar</span>'
-                    : currentVersion === 0 ? '<span class="badge badge-closed">Sin migración inicial</span>'
-                    : isUpdated ? '<span class="badge badge-resolved">Actualizado</span>'
-                    : `<span class="badge badge-pending">${CURRENT_SCHEMA_VERSION - currentVersion} pendiente(s)</span>`;
+                let statusBadge;
+                if (!hasConfig) {
+                    statusBadge = '<span class="badge badge-closed">Sin Configurar</span>';
+                } else if (currentVersion === 0) {
+                    statusBadge = '<span class="badge badge-pending">Sin migración inicial</span>';
+                } else if (isUpdated) {
+                    statusBadge = '<span class="badge badge-resolved">Actualizado</span>';
+                } else {
+                    statusBadge = `<span class="badge badge-pending">${CURRENT_SCHEMA_VERSION - currentVersion} pendiente(s)</span>`;
+                }
                 
-                let serviceKeyIcon = hasServiceKey 
+                const serviceKeyIcon = hasServiceKey 
                     ? '<i class="bi bi-shield-check" style="color:green" title="Service Key OK"></i>' 
                     : '<i class="bi bi-shield-x" style="color:orange" title="Sin Service Key"></i>';
                 
+                const supabaseDisplay = c.supabase_url 
+                    ? `<code style="font-size:0.75rem">${c.supabase_url.substring(8, 35)}...</code>` 
+                    : '<em>No configurado</em>';
+                
+                const lastMigration = c.last_migration_at ? formatDate(c.last_migration_at) : '<em>Nunca</em>';
+                
+                let actions = '';
+                if (hasConfig) {
+                    actions += `<button class="btn-action" onclick="testClientConnection(${c.id})" title="Probar"><i class="bi bi-plug"></i></button>`;
+                }
+                if (hasConfig && currentVersion === 0) {
+                    actions += `<button class="btn-action" onclick="showInitialMigrationInstructions(${c.id})" title="Instrucciones" style="background:#e74c3c;color:white"><i class="bi bi-exclamation-triangle"></i></button>`;
+                }
+                if (!hasConfig) {
+                    actions += `<button class="btn-action" onclick="editClient(${c.id})" title="Configurar"><i class="bi bi-gear"></i></button>`;
+                }
+                
                 return `<tr>
                     <td><strong>${c.name}</strong> ${serviceKeyIcon}</td>
-                    <td>${c.supabase_url ? `<code style="font-size:0.75rem">${c.supabase_url.substring(8,35)}...</code>` : '<em>No configurado</em>'}</td>
+                    <td>${supabaseDisplay}</td>
                     <td><code>v${currentVersion}</code></td>
                     <td>${statusBadge}</td>
-                    <td>${c.last_migration_at ? formatDate(c.last_migration_at) : '<em>Nunca</em>'}</td>
-                    <td>
-                        ${hasConfig ? `<button class="btn-action" onclick="testClientConnection(${c.id})" title="Probar"><i class="bi bi-plug"></i></button>` : ''}
-                        ${hasConfig && currentVersion === 0 ? `<button class="btn-action" onclick="showInitialMigrationInstructions(${c.id})" title="Instrucciones" style="background:#e74c3c;color:white"><i class="bi bi-exclamation-triangle"></i></button>` : ''}
-                        ${!hasConfig ? `<button class="btn-action" onclick="editClient(${c.id})" title="Configurar"><i class="bi bi-gear"></i></button>` : ''}
-                    </td>
+                    <td>${lastMigration}</td>
+                    <td>${actions}</td>
                 </tr>`;
             }).join('');
         }
