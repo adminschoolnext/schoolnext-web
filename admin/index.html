@@ -1417,6 +1417,11 @@
             
             document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
             document.getElementById(`section-${section}`).style.display = 'block';
+            
+            // Cargar datos específicos de cada sección
+            if (section === 'migraciones') {
+                loadMigrationStatus();
+            }
         }
         
         // ==========================================
