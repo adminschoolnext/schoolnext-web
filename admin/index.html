@@ -1628,7 +1628,7 @@
             document.getElementById('client-deployment-url').value = client.deployment_url || '';
             document.getElementById('client-supabase-service-key').value = client.supabase_service_key || '';
             
-            openModal('client');
+            document.getElementById('modal-client').classList.add('show');
         }
         
         async function saveClient() {
