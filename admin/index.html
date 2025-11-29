@@ -1216,7 +1216,14 @@
                     </small>
                 </div>
                 <div class="form-group">
-                    <label>URL de Deployment</label>
+                    <label>Postgres Password</label>
+                    <input type="password" id="client-postgres-password" placeholder="Contraseña de la BD PostgreSQL">
+                    <small style="color: #6c757d; font-size: 0.8rem;">
+                        <i class="bi bi-database-lock"></i> Se encuentra en Settings → Database → Connection string (password)
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label>URL de Deployment *</label>
                     <input type="url" id="client-deployment-url" placeholder="https://colegio.schoolnext.co">
                 </div>
             </div>
@@ -1632,6 +1639,7 @@
             document.getElementById('client-supabase-anon-key').value = client.supabase_anon_key || '';
             document.getElementById('client-deployment-url').value = client.deployment_url || '';
             document.getElementById('client-supabase-service-key').value = client.supabase_service_key || '';
+            document.getElementById('client-postgres-password').value = client.postgres_password || '';
             
             document.getElementById('modal-client').classList.add('show');
         }
@@ -1647,6 +1655,7 @@
                 supabase_anon_key: document.getElementById('client-supabase-anon-key').value,
                 deployment_url: document.getElementById('client-deployment-url').value || null,
                 supabase_service_key: document.getElementById('client-supabase-service-key').value || null,
+                postgres_password: document.getElementById('client-postgres-password').value || null,
                 updated_at: new Date().toISOString()
             };
             
@@ -2308,6 +2317,7 @@
                 document.getElementById('client-supabase-anon-key').value = '';
                 document.getElementById('client-deployment-url').value = '';
                 document.getElementById('client-supabase-service-key').value = '';
+                document.getElementById('client-postgres-password').value = '';
             }
             else if (type === 'user') {
                 document.getElementById('modal-user-title').textContent = 'Nuevo Usuario';
