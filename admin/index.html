@@ -1226,6 +1226,24 @@
                     <label>URL de Deployment *</label>
                     <input type="url" id="client-deployment-url" placeholder="https://colegio.schoolnext.co">
                 </div>
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e9ecef;">
+                <h4 style="color: var(--primary-color); font-size: 0.95rem; margin-bottom: 1rem;">
+                    <i class="bi bi-envelope"></i> Email del Proyecto
+                </h4>
+                <div class="form-group">
+                    <label>Email del Proyecto</label>
+                    <input type="email" id="client-project-email" placeholder="notificaciones@colegio.edu">
+                    <small style="color: #6c757d; font-size: 0.8rem;">
+                        <i class="bi bi-info-circle"></i> Email usado para enviar notificaciones del sistema
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña del Email</label>
+                    <input type="password" id="client-project-email-password" placeholder="••••••••">
+                    <small style="color: #6c757d; font-size: 0.8rem;">
+                        <i class="bi bi-shield-lock"></i> Contraseña o App Password del email
+                    </small>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('client')">Cancelar</button>
@@ -1640,6 +1658,8 @@
             document.getElementById('client-deployment-url').value = client.deployment_url || '';
             document.getElementById('client-supabase-service-key').value = client.supabase_service_key || '';
             document.getElementById('client-postgres-password').value = client.postgres_password || '';
+            document.getElementById('client-project-email').value = client.project_email || '';
+            document.getElementById('client-project-email-password').value = client.project_email_password || '';
             
             document.getElementById('modal-client').classList.add('show');
         }
@@ -1656,6 +1676,8 @@
                 deployment_url: document.getElementById('client-deployment-url').value || null,
                 supabase_service_key: document.getElementById('client-supabase-service-key').value || null,
                 postgres_password: document.getElementById('client-postgres-password').value || null,
+                project_email: document.getElementById('client-project-email').value || null,
+                project_email_password: document.getElementById('client-project-email-password').value || null,
                 updated_at: new Date().toISOString()
             };
             
@@ -2318,6 +2340,8 @@
                 document.getElementById('client-deployment-url').value = '';
                 document.getElementById('client-supabase-service-key').value = '';
                 document.getElementById('client-postgres-password').value = '';
+                document.getElementById('client-project-email').value = '';
+                document.getElementById('client-project-email-password').value = '';
             }
             else if (type === 'user') {
                 document.getElementById('modal-user-title').textContent = 'Nuevo Usuario';
