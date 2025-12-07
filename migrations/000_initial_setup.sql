@@ -14,6 +14,7 @@
 -- ============================================================
 
 -- Usuarios (tabla central, muchas FK apuntan aquí)
+-- Usuarios (tabla central, muchas FK apuntan aquí)
 CREATE TABLE IF NOT EXISTS public.users (
     user_id uuid NOT NULL DEFAULT gen_random_uuid(),
     user_name character varying NOT NULL UNIQUE,
@@ -25,6 +26,12 @@ CREATE TABLE IF NOT EXISTS public.users (
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
     last_login timestamp with time zone,
+    auth_local_enabled boolean DEFAULT true,
+    google_user_id character varying,
+    google_linked_at timestamp with time zone,
+    microsoft_user_id character varying,
+    microsoft_linked_at timestamp with time zone,
+    avatar_url text,
     CONSTRAINT users_pkey PRIMARY KEY (user_id)
 );
 
@@ -56,6 +63,12 @@ CREATE TABLE IF NOT EXISTS public.system_config (
     recaptcha_site_key character varying,
     recaptcha_secret_key character varying,
     notification_sender_name character varying DEFAULT 'Sistema de Notificaciones',
+    auth_local_enabled boolean DEFAULT true,
+    auth_google_enabled boolean DEFAULT false,
+    auth_microsoft_enabled boolean DEFAULT false,
+    google_client_id character varying,
+    microsoft_client_id character varying,
+    microsoft_tenant_id character varying,
     CONSTRAINT system_config_pkey PRIMARY KEY (config_id)
 );
 
