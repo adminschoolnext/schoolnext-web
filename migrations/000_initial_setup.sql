@@ -1,9 +1,9 @@
 -- ============================================================
 -- Migration: 000_initial_setup.sql
--- Version: 0
--- Description: Estructura base completa de SchoolNext
--- Date: 2025-01-XX
--- Author: SchoolNext Team
+-- Version: 1
+-- Description: Estructura base completa de Gestionarte
+-- Date: 2026-03-08
+-- Author: Gestionarte Team
 -- ============================================================
 -- NOTA: Este script crea toda la estructura inicial de la BD.
 -- Debe ejecutarse en una BD vacía de Supabase.
@@ -13,7 +13,6 @@
 -- TABLAS BASE (sin dependencias)
 -- ============================================================
 
--- Usuarios (tabla central, muchas FK apuntan aquí)
 -- Usuarios (tabla central, muchas FK apuntan aquí)
 CREATE TABLE IF NOT EXISTS public.users (
     user_id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -35,7 +34,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     CONSTRAINT users_pkey PRIMARY KEY (user_id)
 );
 
--- Secuencia para system_config (CORREGIDO: crear secuencia explícita)
+-- Secuencia para system_config
 CREATE SEQUENCE IF NOT EXISTS public.system_config_config_id_seq
     AS integer
     START WITH 1
@@ -44,7 +43,7 @@ CREATE SEQUENCE IF NOT EXISTS public.system_config_config_id_seq
     NO MAXVALUE
     CACHE 1;
 
--- Configuración del sistema (CORREGIDO: usar secuencia explícita)
+-- Configuración del sistema
 CREATE TABLE IF NOT EXISTS public.system_config (
     config_id integer NOT NULL DEFAULT nextval('system_config_config_id_seq'::regclass),
     institution_name character varying NOT NULL,
@@ -72,7 +71,6 @@ CREATE TABLE IF NOT EXISTS public.system_config (
     CONSTRAINT system_config_pkey PRIMARY KEY (config_id)
 );
 
--- Asignar la secuencia a la columna
 ALTER SEQUENCE public.system_config_config_id_seq OWNED BY public.system_config.config_id;
 
 -- Roles del sistema
@@ -216,8 +214,11 @@ CREATE TABLE IF NOT EXISTS public.form_fields (
     is_active boolean NOT NULL DEFAULT true,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    show_if_field_id uuid,
+    show_if_value text,
     CONSTRAINT form_fields_pkey PRIMARY KEY (field_id),
-    CONSTRAINT form_fields_form_id_fkey FOREIGN KEY (form_id) REFERENCES public.forms(form_id)
+    CONSTRAINT form_fields_form_id_fkey FOREIGN KEY (form_id) REFERENCES public.forms(form_id),
+    CONSTRAINT form_fields_show_if_field_id_fkey FOREIGN KEY (show_if_field_id) REFERENCES public.form_fields(field_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.field_option_catalog (
@@ -291,7 +292,7 @@ CREATE TABLE IF NOT EXISTS public.procedure_steps (
     CONSTRAINT procedure_steps_form_id_fkey FOREIGN KEY (form_id) REFERENCES public.forms(form_id)
 );
 
--- Agregar FK circular después de crear la tabla
+-- FK circular después de crear la tabla
 ALTER TABLE public.procedure_steps 
     ADD CONSTRAINT procedure_steps_next_step_id_fkey 
     FOREIGN KEY (next_step_id) REFERENCES public.procedure_steps(step_id);
@@ -334,7 +335,7 @@ CREATE TABLE IF NOT EXISTS public.procedure_instances (
 );
 
 -- ============================================================
--- MÓDULO: TAREAS
+-- MÓDULO: ETIQUETAS DE TAREAS (tabla base sin dependencias)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS public.task_tags (
@@ -662,7 +663,115 @@ CREATE TABLE IF NOT EXISTS public.kpi_user_dashboard_variables (
 );
 
 -- ============================================================
--- MÓDULO: TAREAS (continuación con dependencias)
+-- MÓDULO: PROYECTOS
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.projects (
+    project_id uuid NOT NULL DEFAULT gen_random_uuid(),
+    project_name character varying NOT NULL,
+    project_description text,
+    project_purpose text NOT NULL,
+    project_objective text NOT NULL,
+    objective_target_value numeric,
+    objective_current_value numeric,
+    objective_unit character varying,
+    leader_email character varying NOT NULL,
+    leader_name character varying NOT NULL,
+    start_date date NOT NULL,
+    expected_end_date date NOT NULL,
+    actual_end_date date,
+    project_status character varying NOT NULL DEFAULT 'Activo'::character varying 
+        CHECK (project_status::text = ANY (ARRAY['Activo'::character varying::text, 'En Pausa'::character varying::text, 'Completado'::character varying::text, 'Cancelado'::character varying::text])),
+    status_change_reason text,
+    created_by uuid NOT NULL,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT projects_pkey PRIMARY KEY (project_id),
+    CONSTRAINT projects_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.project_participants (
+    participant_id uuid NOT NULL DEFAULT gen_random_uuid(),
+    project_id uuid NOT NULL,
+    user_email character varying NOT NULL,
+    worker_name character varying NOT NULL,
+    participant_role character varying NOT NULL 
+        CHECK (participant_role::text = ANY (ARRAY['Colaborador'::character varying::text, 'Observador'::character varying::text])),
+    added_by uuid NOT NULL,
+    added_by_name character varying,
+    added_at timestamp with time zone NOT NULL DEFAULT now(),
+    participant_status character varying NOT NULL DEFAULT 'active'::character varying 
+        CHECK (participant_status::text = ANY (ARRAY['active'::character varying::text, 'removed'::character varying::text])),
+    removed_at timestamp with time zone,
+    removed_by uuid,
+    removal_reason text,
+    CONSTRAINT project_participants_pkey PRIMARY KEY (participant_id),
+    CONSTRAINT project_participants_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(project_id),
+    CONSTRAINT project_participants_added_by_fkey FOREIGN KEY (added_by) REFERENCES public.users(user_id),
+    CONSTRAINT project_participants_removed_by_fkey FOREIGN KEY (removed_by) REFERENCES public.users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.project_milestones (
+    milestone_id uuid NOT NULL DEFAULT gen_random_uuid(),
+    project_id uuid NOT NULL,
+    milestone_name character varying NOT NULL,
+    milestone_description text,
+    milestone_order integer NOT NULL DEFAULT 1,
+    committed_date date NOT NULL,
+    actual_date date,
+    milestone_status character varying NOT NULL DEFAULT 'Pendiente'::character varying 
+        CHECK (milestone_status::text = ANY (ARRAY['Pendiente'::character varying::text, 'Cumplido'::character varying::text, 'Vencido'::character varying::text])),
+    completion_notes text,
+    created_by uuid NOT NULL,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT project_milestones_pkey PRIMARY KEY (milestone_id),
+    CONSTRAINT project_milestones_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(project_id),
+    CONSTRAINT project_milestones_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.project_minutes (
+    minute_id uuid NOT NULL DEFAULT gen_random_uuid(),
+    project_id uuid NOT NULL,
+    meeting_date date NOT NULL,
+    meeting_time time without time zone,
+    attendees jsonb NOT NULL DEFAULT '[]'::jsonb,
+    topics_discussed text NOT NULL,
+    decisions text,
+    commitments text,
+    additional_notes text,
+    recorded_by uuid NOT NULL,
+    recorded_by_name character varying NOT NULL,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT project_minutes_pkey PRIMARY KEY (minute_id),
+    CONSTRAINT project_minutes_recorded_by_fkey FOREIGN KEY (recorded_by) REFERENCES public.users(user_id),
+    CONSTRAINT project_minutes_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(project_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.project_documents (
+    document_id uuid NOT NULL DEFAULT gen_random_uuid(),
+    project_id uuid NOT NULL,
+    document_name character varying NOT NULL,
+    document_description text,
+    storage_path character varying NOT NULL,
+    file_size integer,
+    mime_type character varying,
+    uploaded_by uuid NOT NULL,
+    uploaded_by_name character varying NOT NULL,
+    uploaded_at timestamp with time zone NOT NULL DEFAULT now(),
+    document_status character varying NOT NULL DEFAULT 'active'::character varying 
+        CHECK (document_status::text = ANY (ARRAY['active'::character varying::text, 'deleted'::character varying::text])),
+    deleted_at timestamp with time zone,
+    deleted_by uuid,
+    CONSTRAINT project_documents_pkey PRIMARY KEY (document_id),
+    CONSTRAINT project_documents_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(project_id),
+    CONSTRAINT project_documents_uploaded_by_fkey FOREIGN KEY (uploaded_by) REFERENCES public.users(user_id),
+    CONSTRAINT project_documents_deleted_by_fkey FOREIGN KEY (deleted_by) REFERENCES public.users(user_id)
+);
+
+-- ============================================================
+-- MÓDULO: TAREAS (con dependencias de projects, procedures, kpi)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS public.tasks (
@@ -684,18 +793,20 @@ CREATE TABLE IF NOT EXISTS public.tasks (
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
     module_type character varying 
-        CHECK (module_type::text = ANY (ARRAY['procedures'::character varying, 'kpi_improvement'::character varying, 'general'::character varying, 'other'::character varying]::text[])),
+        CHECK (module_type::text = ANY (ARRAY['procedures'::character varying, 'kpi_improvement'::character varying, 'general'::character varying, 'projects'::character varying, 'other'::character varying]::text[])),
     procedure_id uuid,
     procedure_step_id uuid,
     task_progress text,
     instance_id uuid,
+    project_id uuid,
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id),
     CONSTRAINT tasks_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(user_id),
     CONSTRAINT tasks_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES public.users(user_id),
     CONSTRAINT tasks_improvement_plan_id_fkey FOREIGN KEY (improvement_plan_id) REFERENCES public.kpi_improvement_plans(plan_id),
     CONSTRAINT tasks_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(procedure_id),
     CONSTRAINT tasks_procedure_step_id_fkey FOREIGN KEY (procedure_step_id) REFERENCES public.procedure_steps(step_id),
-    CONSTRAINT tasks_instance_id_fkey FOREIGN KEY (instance_id) REFERENCES public.procedure_instances(instance_id)
+    CONSTRAINT tasks_instance_id_fkey FOREIGN KEY (instance_id) REFERENCES public.procedure_instances(instance_id),
+    CONSTRAINT tasks_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(project_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.task_collaborators (
@@ -1217,8 +1328,10 @@ CREATE TABLE IF NOT EXISTS public.training_user_paths (
 );
 
 -- ============================================================
--- FUNCIÓN PARA EJECUTAR SQL DINÁMICO (requerida para migraciones)
+-- FUNCIONES DEL SISTEMA
 -- ============================================================
+
+-- Función para ejecutar SQL dinámico (requerida para migraciones)
 CREATE OR REPLACE FUNCTION public.execute_migration_sql(sql_text text)
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -1228,17 +1341,13 @@ AS $$
 DECLARE
     result jsonb;
 BEGIN
-    -- Ejecutar el SQL
     EXECUTE sql_text;
-    
-    -- Retornar éxito
     RETURN jsonb_build_object(
         'success', true,
         'message', 'SQL ejecutado correctamente',
         'executed_at', now()
     );
 EXCEPTION WHEN OTHERS THEN
-    -- Retornar error
     RETURN jsonb_build_object(
         'success', false,
         'error', SQLERRM,
@@ -1248,19 +1357,15 @@ EXCEPTION WHEN OTHERS THEN
 END;
 $$;
 
--- Revocar acceso público y dar solo a service_role
 REVOKE ALL ON FUNCTION public.execute_migration_sql(text) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.execute_migration_sql(text) FROM anon;
 REVOKE ALL ON FUNCTION public.execute_migration_sql(text) FROM authenticated;
--- Solo service_role puede ejecutar esta función (se hereda automáticamente)
 
 COMMENT ON FUNCTION public.execute_migration_sql IS 
 'Función para ejecutar SQL dinámico. Solo accesible con service_role_key. 
-Usada por el sistema de migraciones de SchoolNext.';
+Usada por el sistema de migraciones de Gestionarte.';
 
--- ============================================================
--- FUNCIÓN PARA LISTAR TABLAS PÚBLICAS (usada por Backup)
--- ============================================================
+-- Función para listar tablas públicas (usada por Backup)
 CREATE OR REPLACE FUNCTION get_public_tables()
 RETURNS TABLE(table_name text) 
 LANGUAGE sql
@@ -1279,14 +1384,100 @@ COMMENT ON FUNCTION get_public_tables IS
 -- ============================================================
 -- DATOS INICIALES: ROL SUPER ADMIN
 -- ============================================================
+
 INSERT INTO public.roles (role_name, role_description, is_super_admin, role_status)
 VALUES ('Super Administrador', 'Acceso total al sistema', true, 'active')
 ON CONFLICT (role_name) DO NOTHING;
 
+-- ============================================================
+-- DATOS INICIALES: PERMISOS DEL SISTEMA (64 permisos)
+-- ============================================================
+
+INSERT INTO public.permissions (permission_id, permission_name, permission_description, permission_status, created_at, updated_at, module_id, page_url)
+VALUES
+    -- Módulo: config-security (7 permisos)
+    ('cac71617-2fe2-4ab7-ac86-689cacfdfa71', 'Configuración general', 'Modificar configuración del sistema', 'active', now(), now(), 'config-security', '/modules/config-security/config.html'),
+    ('3db119c5-1ff5-4f62-a48a-0fe642c8b769', 'Gestión de usuarios', 'Crear, editar y eliminar usuarios del sistema', 'active', now(), now(), 'config-security', '/modules/config-security/users.html'),
+    ('85541469-88e8-4c3a-9b7d-f4fddf047593', 'Gestión de roles', 'Administrar roles y sus configuraciones', 'active', now(), now(), 'config-security', '/modules/config-security/roles.html'),
+    ('1dee63ad-2c02-48ea-8562-df6080f2cd17', 'Configurar permisos', 'Configurar permisos de los roles', 'active', now(), now(), 'config-security', '/modules/config-security/role-permissions.html'),
+    ('b1d45ba7-1bbf-4e02-b230-d49b631e5a5d', 'Asignar roles', 'Asignar roles a usuarios del sistema', 'active', now(), now(), 'config-security', '/modules/config-security/user-roles.html'),
+    ('e1665df3-4108-4952-b12c-32b5a7a97382', 'Logs de auditoría', 'Ver registros de auditoría del sistema', 'active', now(), now(), 'config-security', '/modules/config-security/audit-log.html'),
+    ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'Backup y restauración', 'Gestionar respaldos y restauración de la base de datos', 'active', now(), now(), 'config-security', '/modules/config-security/backup.html'),
+
+    -- Módulo: indicators (12 permisos)
+    ('04aa2338-8327-4a43-b5ee-feda1c94ca71', 'Categorías de indicadores', 'Gestionar categorías de indicadores', 'active', now(), now(), 'indicators', '/modules/indicators/categories.html'),
+    ('0531a9da-8b27-4eca-82f7-bd3339ada4f6', 'Variables', 'Gestionar variables del sistema de indicadores', 'active', now(), now(), 'indicators', '/modules/indicators/variables.html'),
+    ('ac17b2db-6196-4ddf-a13b-855646f4b978', 'Segmentaciones', 'Gestionar segmentaciones de datos', 'active', now(), now(), 'indicators', '/modules/indicators/segments.html'),
+    ('bd31cad7-59f7-480e-a62c-d14a326c7fb7', 'Indicadores', 'Gestionar indicadores del sistema', 'active', now(), now(), 'indicators', '/modules/indicators/indicators.html'),
+    ('3a40c95e-ac0c-4062-8db8-81948e6a8909', 'Captura de datos', 'Capturar datos de variables', 'active', now(), now(), 'indicators', '/modules/indicators/data-entry.html'),
+    ('cb6835e6-e239-43b5-81ae-169e5506b4c3', 'Ver mi dashboard', 'Ver dashboard personal de indicadores', 'active', now(), now(), 'indicators', '/modules/indicators/dashboard.html'),
+    ('4767669d-481b-4c33-bab5-8c051b931af3', 'Configurar mi dashboard', 'Configurar dashboard personal de indicadores', 'active', now(), now(), 'indicators', '/modules/indicators/dashboard-config.html'),
+    ('1e4d2ec4-5a6f-490e-b00d-d0a3a493e4f8', 'Gestión grupos de interés', 'Permite crear, editar y administrar grupos de interés (stakeholders) de la institución', 'active', now(), now(), 'indicators', '/modules/indicators/stakeholder-groups.html'),
+    ('3a60c1aa-32f9-490e-82ae-3b4c2cebf6cd', 'Gestión de mejora', 'Acceso al módulo de análisis y planes de mejora de indicadores', 'active', now(), now(), 'indicators', '/modules/indicators/improvement.html'),
+    ('1ec66c65-70bc-4fa8-b445-8914ae2f2d12', 'Tablero de Mejora', 'Acceso al tablero de control y análisis de planes de mejora continua', 'active', now(), now(), 'indicators', '/modules/indicators/improvement-dashboard.html'),
+    ('e3975657-5c3e-414e-8573-d34eb80a3032', 'Análisis global de correlaciones', 'Realizar análisis de correlaciones entre todos los indicadores activos del sistema', 'active', now(), now(), 'indicators', '/modules/indicators/correlations.html'),
+    ('f5964a2a-672a-43b7-8c61-f0349de63b57', 'Benchmarks', 'Gestionar benchmarks y puntos de referencia para indicadores', 'active', now(), now(), 'indicators', '/modules/indicators/benchmarks.html'),
+
+    -- Módulo: surveys (5 permisos)
+    ('547d3223-6c7c-4e90-a347-c567f275e155', 'Gestionar escalas', 'Gestionar escalas de medición de encuestas', 'active', now(), now(), 'surveys', '/modules/surveys/scales.html'),
+    ('49200050-7eab-47c4-a776-746206ba4b18', 'Crear encuestas', 'Crear y editar encuestas maestras', 'active', now(), now(), 'surveys', '/modules/surveys/masters.html'),
+    ('87c3178c-ae6a-4a00-adba-fff7a3675954', 'Dashboard de encuestas', 'Ver dashboard global de encuestas', 'active', now(), now(), 'surveys', '/modules/surveys/dashboard.html'),
+    ('ee32e919-53c3-4edd-80c7-5df50fdf25e6', 'Ver resultados', 'Ver resultados de encuestas aplicadas', 'active', now(), now(), 'surveys', '/modules/surveys/results.html'),
+    ('96698296-8b16-4c21-837f-4afc27a10bcd', 'Comparar aplicaciones', 'Comparar resultados entre aplicaciones', 'active', now(), now(), 'surveys', '/modules/surveys/comparison.html'),
+
+    -- Módulo: pqr (5 permisos)
+    ('2767a3a5-a905-4c11-a9e2-f2c08045723d', 'Gestionar prioridades', 'Gestionar prioridades de PQR', 'active', now(), now(), 'pqr', '/modules/pqr/priorities.html'),
+    ('ac5d5de4-6f03-4a92-99ff-ea88620a062d', 'Gestionar categorías', 'Gestionar categorías de PQR', 'active', now(), now(), 'pqr', '/modules/pqr/categories.html'),
+    ('6209cf23-0da2-4b32-811f-c47707f21b36', 'Gestionar solicitudes', 'Gestionar solicitudes de PQR', 'active', now(), now(), 'pqr', '/modules/pqr/manage-requests.html'),
+    ('5135ada6-33cb-431a-ab3e-200b3c09da4f', 'Responder solicitudes', 'Responder solicitudes de PQR', 'active', now(), now(), 'pqr', '/modules/pqr/respond-requests.html'),
+    ('cab7543d-7670-4586-9ee6-874ffe01e1b3', 'Dashboard de PQR', 'Ver dashboard de PQR', 'active', now(), now(), 'pqr', '/modules/pqr/dashboard.html'),
+
+    -- Módulo: procedures (7 permisos)
+    ('c65e11f6-d96a-48a8-8b3f-523eab05c3a9', 'Gestionar formularios', 'Crear, editar y configurar formularios reutilizables', 'active', now(), now(), 'procedures', '/modules/procedures/forms.html'),
+    ('94fa7fbc-632a-4acf-9455-e5ab19af1992', 'Gestionar procedimientos', 'Diseñar y configurar procedimientos con pasos y bifurcaciones', 'active', now(), now(), 'procedures', '/modules/procedures/procedures.html'),
+    ('ce1c5347-f53d-41c0-8249-0838f270fbb6', 'Ejecutar procedimiento', 'Iniciar una nueva instancia de procedimiento', 'active', now(), now(), 'procedures', '/modules/procedures/execute.html'),
+    ('0a24d2f6-4597-4b75-b2d6-b6e70c5f09df', 'Mis solicitudes de procedimientos', 'Ver el estado de mis procedimientos iniciados', 'active', now(), now(), 'procedures', '/modules/procedures/my-requests.html'),
+    ('9d8345c9-feca-46d6-a998-2dc45db058ab', 'Consultar registros de procedimientos', 'Ver historial completo de todos los procedimientos', 'active', now(), now(), 'procedures', '/modules/procedures/records.html'),
+    ('70c3281c-a9ed-40fd-a4a8-036902463ab1', 'Dashboard de procedimientos', 'Ver dashboard general del módulo de procedimientos', 'active', now(), now(), 'procedures', '/modules/procedures/dashboard.html'),
+    ('0a395650-f554-4ee7-86de-69c139205a29', 'Ejecutar formularios', 'Permite llenar formularios independientes', 'active', now(), now(), 'procedures', '/modules/procedures/execute-form.html'),
+    ('6618b6cd-8f93-4cba-94d9-d7ba10bdba53', 'Consultar respuestas de formularios', 'Permite ver y filtrar respuestas de formularios propios', 'active', now(), now(), 'procedures', '/modules/procedures/query-submissions.html'),
+
+    -- Módulo: general-tools (5 permisos)
+    ('27cee2b2-6ccd-44e3-aedf-04bac4b02eda', 'Gestionar tareas', 'Gestionar tareas del sistema', 'active', now(), now(), 'general-tools', '/modules/general-tools/tasks.html'),
+    ('c53360e1-f9f7-4c7e-841f-a5087e7a42fe', 'Dashboard de tareas', 'Ver dashboard de tareas', 'active', now(), now(), 'general-tools', '/modules/general-tools/dashboard.html'),
+    ('79cf233b-ba4b-42a3-af1b-5fff81e69271', 'Gestionar etiquetas de tareas', 'Permite crear, editar y eliminar etiquetas para categorizar tareas', 'active', now(), now(), 'general-tools', '/modules/general-tools/tags.html'),
+    ('177871b0-7709-4cb3-b08e-0901a4da0083', 'Proyectos', 'Acceso al listado de proyectos donde el usuario participa y opciones de gestión del proyecto', 'active', now(), now(), 'general-tools', '/modules/general-tools/projects.html'),
+    ('e0d8026c-7994-42fd-a3ab-80efc90b653b', 'Dashboard proyectos', 'Acceso al dashboard ejecutivo de proyectos. Permite ver TODOS los proyectos en modo solo lectura.', 'active', now(), now(), 'general-tools', '/modules/general-tools/projects-dashboard.html'),
+
+    -- Módulo: training (22 permisos)
+    ('170db728-40b6-4f91-a2cf-3d027cfee106', 'Gestionar ejes formativos', 'Gestionar ejes de formación', 'active', now(), now(), 'training', '/modules/training/axes.html'),
+    ('27347dea-d45d-4b6c-9119-1e0be4b5a67c', 'Gestionar modalidades', 'Gestionar modalidades de formación', 'active', now(), now(), 'training', '/modules/training/modalities.html'),
+    ('5c4d9805-db1c-4a1e-b250-366ead11f8a9', 'Gestionar fuentes de requisición', 'Gestionar fuentes de requisición formativa', 'active', now(), now(), 'training', '/modules/training/requisition-sources.html'),
+    ('dc063d34-d8a0-440a-bfe1-685872e8f618', 'Gestionar roles de formación', 'Crear, editar y eliminar roles/cargos del sistema de formación', 'active', now(), now(), 'training', '/modules/training/roles.html'),
+    ('af8f6f56-746d-4cc2-93e5-9913fc355f4c', 'Gestionar habilidades', 'Gestionar habilidades formativas', 'active', now(), now(), 'training', '/modules/training/skills.html'),
+    ('0afc66dd-ea23-42bc-8843-192d13410e92', 'Gestionar facilitadores', 'Gestionar facilitadores de formación', 'active', now(), now(), 'training', '/modules/training/facilitators.html'),
+    ('a7765dd2-d9f7-4546-89c9-826205656c91', 'Gestionar unidades formativas', 'Gestionar módulos de formación', 'active', now(), now(), 'training', '/modules/training/modules.html'),
+    ('2b5a37a5-91b5-46db-8e7e-0586db59dd53', 'Gestionar referencias de unidades', 'Gestionar referencias de unidades formativas', 'active', now(), now(), 'training', '/modules/training/module-references.html'),
+    ('b1a220da-0d04-43cd-8e3a-96abad18066a', 'Asociar facilitadores a unidades', 'Asociar facilitadores a unidades formativas', 'active', now(), now(), 'training', '/modules/training/module-facilitators.html'),
+    ('beba1dcf-59ad-4b54-9564-6a5956ceaa53', 'Asociar unidades a roles', 'Asociar unidades formativas a roles', 'active', now(), now(), 'training', '/modules/training/module-roles.html'),
+    ('f0f73e3b-b878-45ae-ad98-0dad1032dfb1', 'Asociar habilidades a unidades', 'Asociar habilidades a unidades formativas', 'active', now(), now(), 'training', '/modules/training/module-skills.html'),
+    ('20bd3979-3338-4daa-9aee-f293228ccbaa', 'Asociar roles a usuarios', 'Asignar y quitar roles de formación a usuarios del sistema', 'active', now(), now(), 'training', '/modules/training/user-roles.html'),
+    ('cd46c982-7e61-43cb-bcd7-726854443e14', 'Generar rutas de formación', 'Generar rutas formativas para usuarios', 'active', now(), now(), 'training', '/modules/training/generate-paths.html'),
+    ('348e9043-55b6-4325-b237-7ebdc1ac2859', 'Registrar cumplimiento de unidades', 'Registrar cumplimiento de unidades formativas', 'active', now(), now(), 'training', '/modules/training/register-completion.html'),
+    ('1799ec11-b4a7-4f7f-90c5-ad030a8d42f3', 'Eximir cumplimiento de unidades', 'Eximir a usuarios del cumplimiento de unidades', 'active', now(), now(), 'training', '/modules/training/waive-modules.html'),
+    ('0c7cdc90-b0a8-47b2-b20e-8c9f283486e8', 'Gestionar fechas tentativas', 'Gestionar fechas tentativas de formación', 'active', now(), now(), 'training', '/modules/training/manage-deadlines.html'),
+    ('6eda3314-fce2-4303-80d5-d4b31bbdaa82', 'Solicitar unidades por interés', 'Solicitar unidades formativas por interés', 'active', now(), now(), 'training', '/modules/training/request-modules.html'),
+    ('8abbb94e-d571-41a1-b8f8-e2a19204b2aa', 'Ver mi ruta de formación', 'Ver mi ruta formativa personal', 'active', now(), now(), 'training', '/modules/training/my-path.html'),
+    ('27f40b82-79d3-47cb-8e51-08751d010140', 'Ver mi dashboard de formación', 'Ver mi dashboard personal de formación', 'active', now(), now(), 'training', '/modules/training/my-dashboard.html'),
+    ('adeca265-7750-4dff-8ebd-33a9ca38c834', 'Consultas de rutas', 'Realizar consultas sobre rutas formativas', 'active', now(), now(), 'training', '/modules/training/path-queries.html'),
+    ('d809095e-1e91-486e-b829-c31e06c76b99', 'Dashboard global de formación', 'Ver dashboard global de formación', 'active', now(), now(), 'training', '/modules/training/dashboard.html'),
+    ('f8b379b5-2ffb-4563-b3b1-193aaf469d67', 'Reportes de formación', 'Generar reportes de formación', 'active', now(), now(), 'training', '/modules/training/reports.html')
+ON CONFLICT (permission_name) DO NOTHING;
 
 -- ============================================================
 -- DATOS INICIALES: USUARIO ADMIN
 -- ============================================================
+
 INSERT INTO public.users (
     user_name, 
     user_display_name, 
@@ -1297,27 +1488,22 @@ INSERT INTO public.users (
 VALUES (
     'admin',
     'Administrador',
-    'admin@institucion.edu.co',
+    'admin@gestionarte.co',
     'admin123',
     'active'
 )
 ON CONFLICT (user_name) DO NOTHING;
 
-
 -- ============================================================
 -- ASIGNAR ROL SUPER ADMIN AL USUARIO ADMIN
 -- ============================================================
+
 INSERT INTO public.user_roles (user_id, role_id)
 SELECT u.user_id, r.role_id
 FROM public.users u, public.roles r
 WHERE u.user_name = 'admin' 
 AND r.role_name = 'Super Administrador'
 ON CONFLICT (user_id, role_id) DO NOTHING;
-
-
--- ============================================================
--- FIN DE LA MIGRACIÓN INICIAL
--- ============================================================
 
 -- ============================================================
 -- FIN DE MIGRACIÓN 000
